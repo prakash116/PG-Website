@@ -142,7 +142,7 @@ export function HeroCarousel() {
             </motion.p>
             <motion.h1
               variants={textItem}
-              className="font-display text-4xl leading-[1.05] font-extrabold tracking-tight text-balance text-white sm:text-6xl lg:text-7xl"
+              className="font-display text-4xl leading-[1.05] font-extrabold tracking-tight text-balance text-white sm:text-5xl lg:text-6xl"
             >
               {slide.headline}
             </motion.h1>
