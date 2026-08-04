@@ -38,7 +38,7 @@ export function RoomTypes() {
               >
                 <article
                   className={cn(
-                    "group flex h-full flex-col overflow-hidden rounded-3xl border bg-card shadow-[0_1px_2px_rgb(2_6_23/0.04)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_48px_rgb(2_6_23/0.1)]",
+                    "group flex h-full flex-col overflow-hidden rounded-3xl border bg-card shadow-[0_1px_2px_rgb(38_22_10/0.04)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_48px_rgb(38_22_10/0.1)]",
                     wide && "lg:flex-row"
                   )}
                 >
@@ -61,7 +61,7 @@ export function RoomTypes() {
                   </div>
 
                   <div className={cn("flex flex-1 flex-col p-6", wide && "lg:p-8")}>
-                    <p className="text-sm font-medium text-primary">
+                    <p className="text-sm font-medium text-brand-ink">
                       {room.tagline}
                     </p>
                     <p className="mt-2 font-display text-2xl font-extrabold text-foreground">
@@ -90,7 +90,7 @@ export function RoomTypes() {
                       </p>
                       <Link
                         href={`/pg?occupancy=${room.occupancy === "Premium" ? "Single" : room.occupancy}`}
-                        className="group/link inline-flex items-center gap-1 text-sm font-bold text-primary transition-colors hover:text-primary/80"
+                        className="group/link inline-flex items-center gap-1 text-sm font-bold text-brand-ink transition-colors hover:text-brand-ink/80"
                       >
                         Explore
                         <ArrowUpRight className="size-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />

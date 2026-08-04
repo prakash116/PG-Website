@@ -85,7 +85,7 @@ export default async function PGDetailPage({ params }: PGDetailPageProps) {
             </span>
             <span aria-hidden="true">·</span>
             <span className="inline-flex items-center gap-1.5">
-              <MapPin className="size-4 text-primary" />
+              <MapPin className="size-4 text-brand-ink" />
               {pg.location}, {pg.city}
             </span>
             <span aria-hidden="true">·</span>
@@ -194,7 +194,7 @@ export default async function PGDetailPage({ params }: PGDetailPageProps) {
                   key={rule}
                   className="flex items-start gap-2.5 text-sm text-muted-foreground"
                 >
-                  <CircleCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <CircleCheck className="mt-0.5 size-4 shrink-0 text-brand-ink" />
                   {rule}
                 </li>
               ))}
@@ -216,10 +216,10 @@ export default async function PGDetailPage({ params }: PGDetailPageProps) {
             <div className="relative mt-5 flex h-64 items-center justify-center overflow-hidden rounded-3xl border bg-secondary">
               <div
                 aria-hidden="true"
-                className="bg-dot-pattern absolute inset-0 text-primary opacity-30"
+                className="bg-dot-pattern absolute inset-0 text-brand-ink opacity-30"
               />
               <div className="relative flex flex-col items-center gap-2 text-center">
-                <span className="flex size-12 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30">
+                <span className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30">
                   <MapPin className="size-6" />
                 </span>
                 <p className="text-sm font-semibold text-foreground">
@@ -239,7 +239,7 @@ export default async function PGDetailPage({ params }: PGDetailPageProps) {
                   key={place}
                   className="inline-flex items-center gap-1.5 rounded-full border bg-card px-3.5 py-2 text-xs font-medium text-foreground"
                 >
-                  <Navigation className="size-3.5 text-primary" />
+                  <Navigation className="size-3.5 text-brand-ink" />
                   {place}
                 </span>
               ))}
@@ -257,8 +257,8 @@ export default async function PGDetailPage({ params }: PGDetailPageProps) {
               >
                 Resident reviews
               </h2>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1.5 text-sm font-bold text-amber-700">
-                <Star className="size-4 fill-amber-500 text-amber-500" />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-sm font-bold text-foreground">
+                <Star className="size-4 fill-amber-400 text-amber-400" />
                 {pg.rating} · {pg.reviewCount} reviews
               </span>
             </div>
@@ -343,7 +343,7 @@ export default async function PGDetailPage({ params }: PGDetailPageProps) {
           </div>
           <a
             href={`tel:${pg.owner.phone}`}
-            className="flex h-11 flex-1 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground"
+            className="flex h-11 flex-1 items-center justify-center rounded-full border border-saffron-600 bg-primary text-sm font-semibold text-primary-foreground"
           >
             Contact Property
           </a>

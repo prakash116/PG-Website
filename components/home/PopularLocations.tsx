@@ -42,7 +42,7 @@ export function PopularLocations() {
                 sizes="(max-width: 640px) 100vw, 50vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-108"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent transition-opacity duration-300 group-hover:from-slate-950/90" />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent transition-opacity duration-300 group-hover:from-ink/90" />
 
               <span className="absolute top-4 right-4 flex size-9 items-center justify-center rounded-full bg-white/15 text-white opacity-0 backdrop-blur transition-all duration-300 group-hover:opacity-100">
                 <ArrowUpRight className="size-4" />

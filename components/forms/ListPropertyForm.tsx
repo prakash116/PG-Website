@@ -108,7 +108,7 @@ export function ListPropertyForm() {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="rounded-3xl border bg-card p-6 shadow-[0_8px_32px_rgb(2_6_23/0.06)] sm:p-8"
+      className="rounded-3xl border bg-card p-6 shadow-[0_8px_32px_rgb(38_22_10/0.06)] sm:p-8"
     >
       {/* Owner details */}
       <h2 className="font-display text-lg font-bold">Owner details</h2>
@@ -256,7 +256,7 @@ export function ListPropertyForm() {
               className={cn(
                 "rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors",
                 form.gender === gender
-                  ? "border-primary bg-primary text-primary-foreground"
+                  ? "border-saffron-600 bg-primary text-primary-foreground"
                   : "bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"
               )}
             >
@@ -316,7 +316,7 @@ export function ListPropertyForm() {
           htmlFor="pg-images"
           className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed bg-secondary/50 px-6 py-10 text-center transition-colors hover:border-primary/50 hover:bg-accent/40"
         >
-          <ImagePlus className="size-8 text-primary" />
+          <ImagePlus className="size-8 text-brand-ink" />
           <span className="text-sm font-semibold text-foreground">
             Click to upload photos
           </span>

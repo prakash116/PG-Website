@@ -16,7 +16,7 @@ export function FAQ() {
       <div className="grid items-start gap-12 lg:grid-cols-[1fr_1.6fr] lg:gap-x-20 lg:gap-y-8">
         {/* Heading */}
         <AnimatedSection className="lg:col-start-1 lg:row-start-1">
-          <p className="mb-3 text-xs font-semibold tracking-[0.18em] text-primary uppercase">
+          <p className="mb-3 text-xs font-semibold tracking-[0.18em] text-brand-ink uppercase">
             Good to know
           </p>
           <h2 className="font-display text-3xl font-extrabold tracking-tight text-balance sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">

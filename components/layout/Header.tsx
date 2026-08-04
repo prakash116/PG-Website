@@ -71,7 +71,7 @@ export function Header() {
           "fixed inset-x-0 top-0 z-50 transition-all duration-300",
           transparent
             ? "bg-transparent py-2"
-            : "border-b border-border/60 bg-background/85 py-0 shadow-[0_1px_12px_rgb(2_6_23/0.04)] backdrop-blur-xl"
+            : "border-b border-border/60 bg-background/85 py-0 shadow-[0_1px_12px_rgb(38_22_10/0.04)] backdrop-blur-xl"
         )}
       >
         <div className="container-page flex h-16 items-center justify-between gap-4">

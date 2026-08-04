@@ -15,7 +15,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-svh items-center justify-center bg-secondary/40 px-4 pt-24 pb-16 sm:pt-28">
       <AnimatedSection className="w-full max-w-4xl">
-        <div className="grid overflow-hidden rounded-[2rem] border bg-card shadow-[0_24px_64px_rgb(2_6_23/0.1)] lg:grid-cols-2">
+        <div className="grid overflow-hidden rounded-[2rem] border bg-card shadow-[0_24px_64px_rgb(38_22_10/0.1)] lg:grid-cols-2">
           {/* Brand panel */}
           <div className="relative hidden lg:block">
             <Image
@@ -25,7 +25,7 @@ export default function LoginPage() {
               sizes="(max-width: 1024px) 0px, 480px"
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-ink/20" />
             <div className="relative flex h-full flex-col justify-between p-10">
               <PzzeeMark className="size-11" />
               <div>

@@ -14,7 +14,7 @@ export function ContactCard({ pg }: { pg: PG }) {
   )}`;
 
   return (
-    <div className="rounded-3xl border bg-card p-6 shadow-[0_8px_32px_rgb(2_6_23/0.06)]">
+    <div className="rounded-3xl border bg-card p-6 shadow-[0_8px_32px_rgb(38_22_10/0.06)]">
       <div className="flex items-end justify-between gap-3">
         <div>
           <p className="text-xs font-medium text-muted-foreground">

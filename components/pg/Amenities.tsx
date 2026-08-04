@@ -64,7 +64,7 @@ export function AmenityChips({
             key={name}
             className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium text-secondary-foreground"
           >
-            <Icon className="size-3 text-primary" />
+            <Icon className="size-3 text-brand-ink" />
             {name}
           </span>
         );

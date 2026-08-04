@@ -49,7 +49,7 @@ export function WhyPzzee() {
       <StaggerGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {FEATURES.map((feature) => (
           <StaggerItem key={feature.title} className="h-full">
-            <div className="group flex h-full flex-col rounded-3xl border bg-card p-7 transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_16px_40px_rgb(2_6_23/0.08)]">
+            <div className="group flex h-full flex-col rounded-3xl border bg-card p-7 transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_16px_40px_rgb(38_22_10/0.08)]">
               <span className="flex size-13 items-center justify-center rounded-2xl bg-accent text-accent-foreground transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
                 <feature.icon className="size-6" />
               </span>

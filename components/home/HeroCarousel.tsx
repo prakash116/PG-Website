@@ -97,7 +97,7 @@ export function HeroCarousel() {
     <section
       id="home"
       aria-label="Featured highlights"
-      className="relative h-[92svh] max-h-[860px] min-h-[600px] overflow-hidden bg-slate-950"
+      className="relative h-[92svh] max-h-[860px] min-h-[600px] overflow-hidden bg-ink"
     >
       {/* Slide backgrounds — all mounted for smooth crossfades */}
       {SLIDES.map((s, i) => (
@@ -117,8 +117,8 @@ export function HeroCarousel() {
             sizes="100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/50 to-slate-950/20" />
-          <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-slate-950/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/50 to-ink/20" />
+          <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-ink/80 to-transparent" />
         </motion.div>
       ))}
 
@@ -137,7 +137,7 @@ export function HeroCarousel() {
               variants={textItem}
               className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold text-white backdrop-blur sm:text-sm"
             >
-              <Sparkles className="size-3.5 text-amber-300" />
+              <Sparkles className="size-3.5 text-saffron-300" />
               {slide.eyebrow}
             </motion.p>
             <motion.h1
@@ -158,7 +158,7 @@ export function HeroCarousel() {
             >
               <Button
                 render={<Link href={slide.primary.href} />}
-                className="h-13 rounded-full bg-primary px-7 text-base font-semibold text-white shadow-lg shadow-primary/30 hover:bg-primary/90"
+                className="h-13 rounded-full bg-primary px-7 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/30 hover:bg-primary/90"
               >
                 {slide.primary.label}
                 <ArrowRight className="size-4.5" data-icon="inline-end" />

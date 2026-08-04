@@ -55,12 +55,12 @@ export function SearchBar() {
         initial={{ opacity: 0, y: 36 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="rounded-3xl border bg-card p-4 shadow-[0_24px_64px_rgb(2_6_23/0.14)] sm:p-5"
+        className="rounded-3xl border bg-card p-4 shadow-[0_24px_64px_rgb(38_22_10/0.14)] sm:p-5"
       >
         <div className="grid gap-3 lg:grid-cols-[1.5fr_1.1fr_1fr_1fr_auto]">
           {/* Location */}
           <div className="flex items-center gap-3 rounded-2xl border bg-background px-4 py-3 transition-colors focus-within:border-primary/50">
-            <MapPin className="size-5 shrink-0 text-primary" />
+            <MapPin className="size-5 shrink-0 text-brand-ink" />
             <div className="min-w-0 flex-1">
               <label
                 htmlFor="search-location"
@@ -81,7 +81,7 @@ export function SearchBar() {
 
           {/* Budget */}
           <div className="flex items-center gap-3 rounded-2xl border bg-background px-4 py-3">
-            <Wallet className="size-5 shrink-0 text-primary" />
+            <Wallet className="size-5 shrink-0 text-brand-ink" />
             <div className="min-w-0 flex-1">
               <span className="block text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
                 Monthly Budget
@@ -112,7 +112,7 @@ export function SearchBar() {
 
           {/* Occupancy */}
           <div className="flex items-center gap-3 rounded-2xl border bg-background px-4 py-3">
-            <Users className="size-5 shrink-0 text-primary" />
+            <Users className="size-5 shrink-0 text-brand-ink" />
             <div className="min-w-0 flex-1">
               <span className="block text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
                 Occupancy
@@ -140,7 +140,7 @@ export function SearchBar() {
 
           {/* PG type */}
           <div className="flex items-center gap-3 rounded-2xl border bg-background px-4 py-3">
-            <Building2 className="size-5 shrink-0 text-primary" />
+            <Building2 className="size-5 shrink-0 text-brand-ink" />
             <div className="min-w-0 flex-1">
               <span className="block text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
                 PG Type

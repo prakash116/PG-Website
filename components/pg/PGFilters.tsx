@@ -198,7 +198,7 @@ export function PGFilters({ filters, onChange, className }: PGFiltersProps) {
               className={cn(
                 "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
                 filters.ac === opt.value
-                  ? "border-primary bg-primary text-primary-foreground"
+                  ? "border-saffron-600 bg-primary text-primary-foreground"
                   : "bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"
               )}
             >
@@ -263,7 +263,7 @@ export function PGFilters({ filters, onChange, className }: PGFiltersProps) {
               className={cn(
                 "inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
                 filters.minRating === opt.value
-                  ? "border-primary bg-primary text-primary-foreground"
+                  ? "border-saffron-600 bg-primary text-primary-foreground"
                   : "bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"
               )}
             >

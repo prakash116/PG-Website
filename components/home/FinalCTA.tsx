@@ -7,7 +7,7 @@ export function FinalCTA() {
   return (
     <section aria-label="Get started" className="container-page pt-4 pb-20 sm:pb-24">
       <AnimatedSection>
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-[oklch(0.26_0.11_277)] px-6 py-16 text-center sm:px-12 sm:py-20">
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-brand-deep px-6 py-16 text-center sm:px-12 sm:py-20">
           {/* Ambient background elements */}
           <div
             aria-hidden="true"
@@ -15,7 +15,7 @@ export function FinalCTA() {
           />
           <div
             aria-hidden="true"
-            className="absolute -right-16 -bottom-28 size-80 animate-float-slow rounded-full bg-violet-500/40 blur-[120px]"
+            className="absolute -right-16 -bottom-28 size-80 animate-float-slow rounded-full bg-saffron-300/35 blur-[120px]"
           />
           <div
             aria-hidden="true"
@@ -33,7 +33,7 @@ export function FinalCTA() {
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3.5">
               <Button
                 render={<Link href="/pg" />}
-                className="h-13 rounded-full bg-white px-8 text-base font-bold text-[oklch(0.26_0.11_277)] shadow-xl shadow-black/25 hover:bg-white/90"
+                className="h-13 rounded-full bg-white px-8 text-base font-bold text-brand-deep shadow-xl shadow-black/25 hover:bg-white/90"
               >
                 Find My PG
                 <ArrowRight className="size-4.5" data-icon="inline-end" />

@@ -43,7 +43,7 @@ export default function ListPropertyPage() {
         {/* Left: pitch */}
         <div className="lg:sticky lg:top-28 lg:self-start">
           <AnimatedSection>
-            <p className="mb-3 text-xs font-semibold tracking-[0.18em] text-primary uppercase">
+            <p className="mb-3 text-xs font-semibold tracking-[0.18em] text-brand-ink uppercase">
               For property owners
             </p>
             <h1 className="font-display text-3xl font-extrabold tracking-tight text-balance sm:text-4xl lg:text-5xl lg:leading-[1.08]">

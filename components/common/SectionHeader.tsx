@@ -38,7 +38,7 @@ export function SectionHeader({
           <p
             className={cn(
               "mb-3 text-xs font-semibold tracking-[0.18em] uppercase",
-              light ? "text-white/60" : "text-primary"
+              light ? "text-white/60" : "text-brand-ink"
             )}
           >
             {eyebrow}
@@ -70,7 +70,7 @@ export function SectionHeader({
             "group inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold transition-colors",
             light
               ? "text-white/80 hover:text-white"
-              : "text-primary hover:text-primary/80"
+              : "text-brand-ink hover:text-brand-ink/80"
           )}
         >
           {action.label}

@@ -12,7 +12,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
       className={cn(
         "flex h-full shrink-0 flex-col rounded-3xl border bg-card p-7",
         t.featured
-          ? "w-[88vw] border-primary/20 shadow-[0_16px_40px_rgb(2_6_23/0.08)] sm:w-105"
+          ? "w-[88vw] border-primary/20 shadow-[0_16px_40px_rgb(38_22_10/0.08)] sm:w-105"
           : "w-[82vw] sm:w-89"
       )}
     >
@@ -34,7 +34,7 @@ function TestimonialCard({ t }: { t: Testimonial }) {
             />
           ))}
         </div>
-        <Quote className="size-6 text-primary/20" />
+        <Quote className="size-6 text-brand-ink/20" />
       </div>
 
       <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed text-foreground/85">

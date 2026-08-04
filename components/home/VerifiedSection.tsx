@@ -58,7 +58,7 @@ export function VerifiedSection() {
           </div>
 
           {/* Floating seal */}
-          <div className="absolute -right-3 -bottom-5 flex items-center gap-3 rounded-2xl border bg-card p-4 shadow-[0_20px_48px_rgb(2_6_23/0.16)] sm:right-6">
+          <div className="absolute -right-3 -bottom-5 flex items-center gap-3 rounded-2xl border bg-card p-4 shadow-[0_20px_48px_rgb(38_22_10/0.16)] sm:right-6">
             <span className="flex size-12 items-center justify-center rounded-full bg-success/10 ring-4 ring-success/20">
               <BadgeCheck className="size-6 text-success" />
             </span>
@@ -76,7 +76,7 @@ export function VerifiedSection() {
         {/* Copy */}
         <div>
           <AnimatedSection>
-            <p className="mb-3 text-xs font-semibold tracking-[0.18em] text-primary uppercase">
+            <p className="mb-3 text-xs font-semibold tracking-[0.18em] text-brand-ink uppercase">
               Trust, built in
             </p>
             <h2 className="font-display text-3xl font-extrabold tracking-tight text-balance sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">

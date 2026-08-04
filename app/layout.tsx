@@ -65,7 +65,7 @@ export default function RootLayout({
           toastOptions={{
             duration: 3200,
             style: {
-              background: "oklch(0.208 0.042 265.755)",
+              background: "oklch(0.215 0.045 47)",
               color: "#fff",
               borderRadius: "999px",
               padding: "10px 18px",

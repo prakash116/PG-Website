@@ -41,7 +41,7 @@ export function PGCard({ pg, className }: { pg: PG; className?: string }) {
       whileHover={{ y: -6 }}
       transition={{ type: "spring", stiffness: 300, damping: 24 }}
       className={cn(
-        "group flex h-full flex-col overflow-hidden rounded-3xl border bg-card shadow-[0_1px_2px_rgb(2_6_23/0.04)] transition-shadow hover:shadow-[0_16px_40px_rgb(2_6_23/0.1)]",
+        "group flex h-full flex-col overflow-hidden rounded-3xl border bg-card shadow-[0_1px_2px_rgb(38_22_10/0.04)] transition-shadow hover:shadow-[0_16px_40px_rgb(38_22_10/0.1)]",
         className
       )}
     >
@@ -75,7 +75,7 @@ export function PGCard({ pg, className }: { pg: PG; className?: string }) {
           <Heart
             className={cn(
               "size-4.5 transition-colors",
-              favourite ? "fill-rose-500 text-rose-500" : "text-slate-600"
+              favourite ? "fill-rose-500 text-rose-500" : "text-muted-foreground"
             )}
           />
         </motion.button>
@@ -94,19 +94,19 @@ export function PGCard({ pg, className }: { pg: PG; className?: string }) {
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-start justify-between gap-3">
           <Link href={href} className="min-w-0">
-            <h3 className="truncate font-display text-lg font-bold text-foreground transition-colors group-hover:text-primary">
+            <h3 className="truncate font-display text-lg font-bold text-foreground transition-colors group-hover:text-brand-ink">
               {pg.name}
             </h3>
           </Link>
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700">
-            <Star className="size-3.5 fill-amber-500 text-amber-500" />
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-secondary px-2 py-1 text-xs font-semibold text-foreground">
+            <Star className="size-3.5 fill-amber-400 text-amber-400" />
             {pg.rating}
           </span>
         </div>
 
         <div className="space-y-1 text-sm text-muted-foreground">
           <p className="flex items-center gap-1.5">
-            <MapPin className="size-3.5 shrink-0 text-primary" />
+            <MapPin className="size-3.5 shrink-0 text-brand-ink" />
             <span className="truncate">
               {pg.location}, {pg.city}
             </span>

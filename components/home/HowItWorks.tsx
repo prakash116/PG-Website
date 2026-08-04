@@ -71,8 +71,8 @@ export function HowItWorks() {
             <StaggerItem key={step.number}>
               <div className="flex items-start gap-5 md:flex-col md:items-center md:text-center">
                 <div className="relative shrink-0">
-                  <span className="flex size-20 items-center justify-center rounded-3xl border bg-card shadow-[0_8px_24px_rgb(2_6_23/0.06)]">
-                    <step.icon className="size-8 text-primary" />
+                  <span className="flex size-20 items-center justify-center rounded-3xl border bg-card shadow-[0_8px_24px_rgb(38_22_10/0.06)]">
+                    <step.icon className="size-8 text-brand-ink" />
                   </span>
                   <span className="absolute -top-2 -right-2 flex size-7 items-center justify-center rounded-full bg-primary font-display text-[11px] font-extrabold text-primary-foreground">
                     {step.number}

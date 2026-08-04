@@ -42,6 +42,26 @@
   --color-card: var(--card);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+
+  /* Indian Saffron brand ramp — 500 is the exact brand colour #FF7722 */
+  --color-saffron-50: var(--saffron-50);
+  --color-saffron-100: var(--saffron-100);
+  --color-saffron-200: var(--saffron-200);
+  --color-saffron-300: var(--saffron-300);
+  --color-saffron-400: var(--saffron-400);
+  --color-saffron-500: var(--saffron-500);
+  --color-saffron-600: var(--saffron-600);
+  --color-saffron-700: var(--saffron-700);
+  --color-saffron-800: var(--saffron-800);
+  --color-saffron-900: var(--saffron-900);
+  --color-saffron-950: var(--saffron-950);
+
+  /* Semantic brand aliases — see the notes above :root */
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-deep: var(--brand-deep);
+  --color-ink: var(--ink);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -75,81 +95,125 @@
 }
 
 /*
-  Pzzee brand theme.
-  Primary: deep royal indigo. Secondary surfaces: very light blue-grey.
-  Change these variables to re-theme the whole product.
+  Pzzee brand theme — Indian Saffron.
+
+  The whole product is driven from the saffron ramp below. `--saffron-500` is
+  the exact brand colour #FF7722; every other step is the same hue family
+  walked down the OKLCH lightness axis, so tints and shades stay in one family
+  instead of drifting brown or pink. Neutrals are warm (hue ~50–70, very low
+  chroma) so greys sit under saffron rather than fighting it.
+
+  Three aliases exist because one orange cannot do every job:
+
+    --brand       #FF7722 exactly. Fills, glows, brand marks. Pair with
+                  --primary-foreground (espresso), NOT white — saffron against
+                  white text is only 2.65:1 and fails WCAG AA.
+    --brand-ink   Deepened saffron for saffron-coloured *text and icons* on
+                  light surfaces (5.1:1 on white). This is what `text-brand-ink`
+                  resolves to; never colour text with `--brand` on white.
+    --brand-deep  Near-black warm espresso for the dark marketing panels
+                  (hero, budget band, final CTA, footer). White on it is 17.7:1
+                  and #FF7722 on it is 6.7:1, so the brand colour can be used
+                  for copy there.
+
+  Re-theming the product = changing the saffron ramp.
 */
 :root {
+  /* Brand ramp */
+  --saffron-50: oklch(0.977 0.014 62);
+  --saffron-100: oklch(0.955 0.03 66);
+  --saffron-200: oklch(0.908 0.058 62);
+  --saffron-300: oklch(0.848 0.095 56);
+  --saffron-400: oklch(0.785 0.132 51);
+  --saffron-500: oklch(0.7197 0.1874 46.8); /* #FF7722 — Indian Saffron */
+  --saffron-600: oklch(0.655 0.183 42);
+  --saffron-700: oklch(0.545 0.152 43);
+  --saffron-800: oklch(0.465 0.125 44);
+  --saffron-900: oklch(0.395 0.1 45);
+  --saffron-950: oklch(0.255 0.06 46);
+
+  --brand: var(--saffron-500);
+  --brand-ink: var(--saffron-700);
+  --brand-deep: oklch(0.215 0.045 47);
+  --ink: oklch(0.16 0.022 50);
+
   --background: oklch(1 0 0);
-  --foreground: oklch(0.208 0.042 265.755);
+  --foreground: oklch(0.235 0.028 55);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.235 0.028 55);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.208 0.042 265.755);
-  --primary: oklch(0.475 0.235 277);
-  --primary-foreground: oklch(0.985 0.005 270);
-  --secondary: oklch(0.972 0.008 255);
-  --secondary-foreground: oklch(0.279 0.041 260.031);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.5 0.038 257.287);
-  --accent: oklch(0.947 0.028 272);
-  --accent-foreground: oklch(0.398 0.195 277.366);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.585 0.233 277.117);
-  --success: oklch(0.596 0.145 163.225);
-  --success-foreground: oklch(0.985 0.005 160);
-  --chart-1: oklch(0.585 0.233 277.117);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --popover-foreground: oklch(0.235 0.028 55);
+  --primary: var(--saffron-500);
+  --primary-foreground: oklch(0.21 0.035 45);
+  --secondary: oklch(0.972 0.012 70);
+  --secondary-foreground: oklch(0.32 0.038 50);
+  --muted: oklch(0.968 0.009 70);
+  --muted-foreground: oklch(0.522 0.026 58);
+  --accent: var(--saffron-100);
+  --accent-foreground: oklch(0.535 0.152 43);
+  --destructive: oklch(0.55 0.215 27);
+  --border: oklch(0.922 0.012 70);
+  --input: oklch(0.922 0.012 70);
+  /* Focus ring is saffron-600, not -500: 3.41:1 on white clears the 3:1
+     non-text contrast floor that the pure brand colour misses. */
+  --ring: var(--saffron-600);
+  --success: oklch(0.53 0.11 163);
+  --success-foreground: oklch(0.985 0.01 160);
+  --chart-1: var(--saffron-500);
+  --chart-2: oklch(0.78 0.15 80);
+  --chart-3: oklch(0.66 0.105 190);
+  --chart-4: oklch(0.62 0.19 15);
+  --chart-5: oklch(0.5 0.12 330);
   --radius: 0.8rem;
-  --sidebar: oklch(0.985 0.005 255);
-  --sidebar-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-primary: oklch(0.475 0.235 277);
-  --sidebar-primary-foreground: oklch(0.985 0.005 270);
-  --sidebar-accent: oklch(0.947 0.028 272);
-  --sidebar-accent-foreground: oklch(0.398 0.195 277.366);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.585 0.233 277.117);
+  --sidebar: oklch(0.985 0.008 70);
+  --sidebar-foreground: oklch(0.235 0.028 55);
+  --sidebar-primary: var(--saffron-500);
+  --sidebar-primary-foreground: oklch(0.21 0.035 45);
+  --sidebar-accent: var(--saffron-100);
+  --sidebar-accent-foreground: oklch(0.535 0.152 43);
+  --sidebar-border: oklch(0.922 0.012 70);
+  --sidebar-ring: var(--saffron-600);
 }
 
 .dark {
-  --background: oklch(0.155 0.03 262);
-  --foreground: oklch(0.975 0.006 255);
-  --card: oklch(0.205 0.035 264);
-  --card-foreground: oklch(0.975 0.006 255);
-  --popover: oklch(0.205 0.035 264);
-  --popover-foreground: oklch(0.975 0.006 255);
-  --primary: oklch(0.68 0.19 275);
-  --primary-foreground: oklch(0.155 0.03 262);
-  --secondary: oklch(0.24 0.035 262);
-  --secondary-foreground: oklch(0.975 0.006 255);
-  --muted: oklch(0.24 0.035 262);
-  --muted-foreground: oklch(0.71 0.03 257);
-  --accent: oklch(0.28 0.06 273);
-  --accent-foreground: oklch(0.93 0.03 272);
-  --destructive: oklch(0.704 0.191 22.216);
+  --brand: var(--saffron-500);
+  --brand-ink: oklch(0.795 0.135 55);
+  --brand-deep: oklch(0.145 0.03 47);
+  --ink: oklch(0.12 0.02 50);
+
+  --background: oklch(0.165 0.018 55);
+  --foreground: oklch(0.968 0.008 75);
+  --card: oklch(0.212 0.022 52);
+  --card-foreground: oklch(0.968 0.008 75);
+  --popover: oklch(0.212 0.022 52);
+  --popover-foreground: oklch(0.968 0.008 75);
+  --primary: var(--saffron-500);
+  --primary-foreground: oklch(0.19 0.03 45);
+  --secondary: oklch(0.255 0.022 50);
+  --secondary-foreground: oklch(0.968 0.008 75);
+  --muted: oklch(0.255 0.022 50);
+  --muted-foreground: oklch(0.735 0.025 65);
+  --accent: oklch(0.29 0.055 50);
+  --accent-foreground: oklch(0.855 0.095 62);
+  --destructive: oklch(0.7 0.19 25);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.585 0.233 277.117);
-  --success: oklch(0.696 0.17 162.48);
-  --success-foreground: oklch(0.155 0.03 262);
-  --chart-1: oklch(0.585 0.233 277.117);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0.035 264);
-  --sidebar-foreground: oklch(0.975 0.006 255);
-  --sidebar-primary: oklch(0.68 0.19 275);
-  --sidebar-primary-foreground: oklch(0.155 0.03 262);
-  --sidebar-accent: oklch(0.28 0.06 273);
-  --sidebar-accent-foreground: oklch(0.93 0.03 272);
+  --ring: var(--saffron-500);
+  --success: oklch(0.72 0.15 163);
+  --success-foreground: oklch(0.165 0.018 55);
+  --chart-1: var(--saffron-500);
+  --chart-2: oklch(0.78 0.15 80);
+  --chart-3: oklch(0.66 0.105 190);
+  --chart-4: oklch(0.62 0.19 15);
+  --chart-5: oklch(0.5 0.12 330);
+  --sidebar: oklch(0.212 0.022 52);
+  --sidebar-foreground: oklch(0.968 0.008 75);
+  --sidebar-primary: var(--saffron-500);
+  --sidebar-primary-foreground: oklch(0.19 0.03 45);
+  --sidebar-accent: oklch(0.29 0.055 50);
+  --sidebar-accent-foreground: oklch(0.855 0.095 62);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.585 0.233 277.117);
+  --sidebar-ring: var(--saffron-500);
 }
 
 /* Page container used across every section */

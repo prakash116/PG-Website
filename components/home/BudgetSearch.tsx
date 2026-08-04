@@ -36,7 +36,7 @@ export function BudgetSearch() {
   return (
     <section
       id="budget"
-      className="relative scroll-mt-24 overflow-hidden bg-[oklch(0.24_0.09_277)] py-20 text-white sm:py-24"
+      className="relative scroll-mt-24 overflow-hidden bg-brand-deep py-20 text-white sm:py-24"
     >
       {/* Texture */}
       <div className="bg-dot-pattern absolute inset-0 text-white/40 opacity-20" aria-hidden="true" />
@@ -72,7 +72,7 @@ export function BudgetSearch() {
                   className={cn(
                     "rounded-2xl border px-6 py-4 font-display text-sm font-bold transition-all duration-200 sm:text-base",
                     active
-                      ? "border-white bg-white text-[oklch(0.24_0.09_277)] shadow-xl shadow-black/20"
+                      ? "border-white bg-white text-brand-deep shadow-xl shadow-black/20"
                       : "border-white/20 bg-white/5 text-white/85 hover:border-white/50 hover:bg-white/10"
                   )}
                 >
@@ -128,7 +128,7 @@ export function BudgetSearch() {
               >
                 <Button
                   onClick={explore}
-                  className="h-13 rounded-full bg-white px-8 text-base font-bold text-[oklch(0.24_0.09_277)] shadow-xl shadow-black/25 hover:bg-white/90"
+                  className="h-13 rounded-full bg-white px-8 text-base font-bold text-brand-deep shadow-xl shadow-black/25 hover:bg-white/90"
                 >
                   Explore PGs{" "}
                   {selected
