@@ -35,7 +35,7 @@ export function Logo({ tone = "dark", className }: LogoProps) {
           tone === "light" ? "text-white" : "text-foreground"
         )}
       >
-        Pzzee
+        Pzee
       </span>
     </Link>
   );
