@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Building2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnimatedSection } from "@/components/common/AnimatedSection";
 
@@ -37,13 +37,6 @@ export function FinalCTA() {
               >
                 Find My PG
                 <ArrowRight className="size-4.5" data-icon="inline-end" />
-              </Button>
-              <Button
-                render={<Link href="/list-property" />}
-                className="h-13 rounded-full border border-white/25 bg-white/10 px-8 text-base font-semibold text-white backdrop-blur hover:bg-white/20"
-              >
-                <Building2 className="size-4.5" data-icon="inline-start" />
-                List Your Property
               </Button>
             </div>
           </div>

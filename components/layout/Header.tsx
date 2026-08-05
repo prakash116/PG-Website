@@ -118,16 +118,15 @@ export function Header() {
               Login
             </Button>
             <Button
-              render={<Link href="/list-property" />}
+              variant="outline"
+              render={<Link href="/register" />}
               className={cn(
                 "h-10 rounded-full px-5 text-sm font-semibold",
-                transparent
-                  ? "bg-white text-foreground hover:bg-white/90"
-                  : "bg-primary text-primary-foreground hover:bg-primary/90"
+                transparent &&
+                  "border-white/35 bg-white/10 text-white hover:bg-white/20 hover:text-white"
               )}
             >
-              List Your PG
-              <ArrowRight className="size-4" data-icon="inline-end" />
+              Register
             </Button>
           </div>
 
@@ -194,11 +193,11 @@ export function Header() {
               ))}
               <motion.div variants={menuItem} className="mt-8 flex flex-col gap-3">
                 <Button
-                  render={<Link href="/list-property" />}
+                  render={<Link href="/register" />}
                   onClick={() => setOpen(false)}
                   className="h-12 rounded-full text-base font-semibold"
                 >
-                  List Your PG
+                  Register
                 </Button>
                 <Button
                   variant="outline"

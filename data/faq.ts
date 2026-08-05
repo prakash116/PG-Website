@@ -34,7 +34,7 @@ export const faqs: FAQItem[] = [
   {
     question: "Can PG owners list their property on Pzzee?",
     answer:
-      "Yes. Owners can submit their property using the List Your PG page. After a quick verification of details and photos by our team, the listing goes live and starts receiving enquiries.",
+      "Yes. Owners can share their property details with our team over email. After a quick verification of details and photos, the listing goes live and starts receiving enquiries.",
   },
   {
     question: "What does the Pzzee Verified badge mean?",

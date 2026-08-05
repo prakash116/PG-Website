@@ -22,7 +22,6 @@ const LINK_COLUMNS = [
     heading: "Company",
     links: [
       { label: "About Us", href: "/#why-pzzee" },
-      { label: "List Your PG", href: "/list-property" },
       { label: "Contact", href: "/#faq" },
       { label: "Careers", href: "/#why-pzzee" },
     ],

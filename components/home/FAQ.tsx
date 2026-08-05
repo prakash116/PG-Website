@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { faqs } from "@/data/faq";
 import {
@@ -64,7 +63,7 @@ export function FAQ() {
             </p>
             <Button
               variant="outline"
-              render={<Link href="/list-property" />}
+              render={<a href="mailto:support@restocare.in" />}
               className="mt-5 h-10 rounded-full bg-card px-5 text-sm font-semibold"
             >
               Contact Support
