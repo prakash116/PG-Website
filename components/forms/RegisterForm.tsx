@@ -27,9 +27,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import type {
+  RegistrationRole,
   RegisterPayload,
   UserGender,
-  UserRole,
   UserType,
 } from "@/lib/api/auth";
 import { useAuthStore } from "@/stores/auth-store";
@@ -41,7 +41,7 @@ interface RegisterFormState {
   phone: string;
   password: string;
   confirmPassword: string;
-  role: UserRole;
+  role: RegistrationRole;
   userType: UserType | "";
   gender: UserGender | "";
   dateOfBirth: string;
@@ -71,7 +71,7 @@ const INITIAL_FORM: RegisterFormState = {
 };
 
 const ROLE_OPTIONS: Array<{
-  value: UserRole;
+  value: RegistrationRole;
   label: string;
   description: string;
   icon: typeof Search;

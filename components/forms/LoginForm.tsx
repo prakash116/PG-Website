@@ -1,153 +1,208 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { FcGoogle } from "react-icons/fc";
-import { Eye, EyeOff, Lock, Mail, Smartphone } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  LoaderCircle,
+  Lock,
+  Mail,
+  Smartphone,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getRoleDestination } from "@/lib/auth/roles";
+import { useAuthStore } from "@/stores/auth-store";
+
+type LoginMode = "email" | "phone";
 
 export function LoginForm() {
-  const [phone, setPhone] = useState("");
+  const router = useRouter();
+  const [mode, setMode] = useState<LoginMode>("email");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const isLoggingIn = useAuthStore((state) => state.isLoggingIn);
+  const error = useAuthStore((state) => state.error);
+  const login = useAuthStore((state) => state.login);
+  const clearError = useAuthStore((state) => state.clearError);
 
-  function handlePhoneSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!/^[6-9]\d{9}$/.test(phone)) {
-      toast.error("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-    toast.success(`OTP sent to +91 ${phone}. (Demo — authentication coming soon!)`);
+  function clearLoginError() {
+    if (error) clearError();
   }
 
-  function handleEmailSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!email.includes("@")) {
+
+    const identifier = mode === "email" ? email.trim().toLowerCase() : phone;
+
+    if (
+      mode === "email" &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)
+    ) {
       toast.error("Please enter a valid email address.");
       return;
     }
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters.");
+
+    if (mode === "phone" && !/^[6-9]\d{9}$/.test(identifier)) {
+      toast.error("Please enter a valid 10-digit mobile number.");
       return;
     }
-    toast.success("Welcome back! (Demo — authentication coming soon!)");
+
+    if (!password) {
+      toast.error("Please enter your password.");
+      return;
+    }
+
+    try {
+      const response = await login({ identifier, password });
+      toast.success(response.message);
+      router.replace(getRoleDestination(response.data.user.role));
+    } catch (requestError: unknown) {
+      toast.error(
+        requestError instanceof Error
+          ? requestError.message
+          : "Login failed. Please try again."
+      );
+    }
   }
 
   return (
-    <div className="w-full">
-      <Tabs defaultValue="phone" className="w-full">
+    <form onSubmit={handleSubmit} noValidate className="w-full space-y-5">
+      <Tabs
+        value={mode}
+        onValueChange={(value) => {
+          setMode(value as LoginMode);
+          clearLoginError();
+        }}
+        className="w-full"
+      >
         <TabsList className="h-12 w-full rounded-full bg-secondary p-1.5">
-          <TabsTrigger value="phone" className="h-full flex-1 rounded-full text-sm">
-            <Smartphone className="size-4" />
-            Phone
-          </TabsTrigger>
-          <TabsTrigger value="email" className="h-full flex-1 rounded-full text-sm">
+          <TabsTrigger
+            value="email"
+            className="h-full flex-1 rounded-full text-sm"
+          >
             <Mail className="size-4" />
             Email
           </TabsTrigger>
+          <TabsTrigger
+            value="phone"
+            className="h-full flex-1 rounded-full text-sm"
+          >
+            <Smartphone className="size-4" />
+            Phone
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="phone" className="mt-6">
-          <form onSubmit={handlePhoneSubmit} noValidate className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="login-phone">Mobile Number</Label>
-              <div className="flex overflow-hidden rounded-xl border focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
-                <span className="flex items-center border-r bg-secondary px-3.5 text-sm font-semibold text-secondary-foreground">
-                  +91
-                </span>
-                <Input
-                  id="login-phone"
-                  type="tel"
-                  inputMode="numeric"
-                  value={phone}
-                  onChange={(e) =>
-                    setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
-                  }
-                  placeholder="98100 12345"
-                  autoComplete="tel-national"
-                  className="h-12 flex-1 rounded-none border-0 shadow-none focus-visible:ring-0 focus-visible:border-transparent"
-                />
-              </div>
-            </div>
-            <Button type="submit" className="h-12 w-full rounded-full text-[15px] font-semibold">
-              Send OTP
-            </Button>
-          </form>
+        <TabsContent value="email" className="mt-6">
+          <div className="space-y-2">
+            <Label htmlFor="login-email">Email</Label>
+            <Input
+              id="login-email"
+              type="email"
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                clearLoginError();
+              }}
+              placeholder="you@example.com"
+              autoComplete="email"
+              className="h-12 rounded-xl"
+            />
+          </div>
         </TabsContent>
 
-        <TabsContent value="email" className="mt-6">
-          <form onSubmit={handleEmailSubmit} noValidate className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="login-email">Email</Label>
+        <TabsContent value="phone" className="mt-6">
+          <div className="space-y-2">
+            <Label htmlFor="login-phone">Mobile Number</Label>
+            <div className="flex overflow-hidden rounded-xl border focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
+              <span className="flex items-center border-r bg-secondary px-3.5 text-sm font-semibold text-secondary-foreground">
+                +91
+              </span>
               <Input
-                id="login-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                autoComplete="email"
-                className="h-12 rounded-xl"
+                id="login-phone"
+                type="tel"
+                inputMode="numeric"
+                value={phone}
+                onChange={(event) => {
+                  setPhone(
+                    event.target.value.replace(/\D/g, "").slice(0, 10)
+                  );
+                  clearLoginError();
+                }}
+                placeholder="98765 43210"
+                autoComplete="tel-national"
+                className="h-12 flex-1 rounded-none border-0 shadow-none focus-visible:border-transparent focus-visible:ring-0"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="login-password">Password</Label>
-              <div className="relative">
-                <Lock className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="login-password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 6 characters"
-                  autoComplete="current-password"
-                  className="h-12 rounded-xl px-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {showPassword ? (
-                    <EyeOff className="size-4" />
-                  ) : (
-                    <Eye className="size-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <Button type="submit" className="h-12 w-full rounded-full text-[15px] font-semibold">
-              Continue
-            </Button>
-          </form>
+          </div>
         </TabsContent>
       </Tabs>
 
-      <div className="relative my-6">
-        <Separator />
-        <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs font-medium text-muted-foreground">
-          or continue with
-        </span>
+      <div className="space-y-2">
+        <Label htmlFor="login-password">Password</Label>
+        <div className="relative">
+          <Lock className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            id="login-password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(event) => {
+              setPassword(event.target.value);
+              clearLoginError();
+            }}
+            placeholder="Enter your password"
+            autoComplete="current-password"
+            className="h-12 rounded-xl px-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((visible) => !visible)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {showPassword ? (
+              <EyeOff className="size-4" />
+            ) : (
+              <Eye className="size-4" />
+            )}
+          </button>
+        </div>
       </div>
 
+      {error && (
+        <p
+          role="alert"
+          className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm font-medium text-destructive"
+        >
+          {error}
+        </p>
+      )}
+
       <Button
-        variant="outline"
-        onClick={() => toast("Google sign-in coming soon!", { icon: "🚀" })}
+        type="submit"
+        disabled={isLoggingIn}
         className="h-12 w-full rounded-full text-[15px] font-semibold"
       >
-        <FcGoogle className="size-5" data-icon="inline-start" />
-        Google
+        {isLoggingIn && <LoaderCircle className="size-4 animate-spin" />}
+        {isLoggingIn ? "Signing in..." : "Login"}
       </Button>
 
-      <p className="mt-6 text-center text-xs leading-relaxed text-muted-foreground">
-        By continuing you agree to Pzzee&apos;s Terms of Service and Privacy
-        Policy. New here? An account is created automatically on first login.
+      <p className="text-center text-sm text-muted-foreground">
+        New to Pzzee?{" "}
+        <Link
+          href="/register"
+          className="font-semibold text-brand-ink hover:underline"
+        >
+          Create an account
+        </Link>
       </p>
-    </div>
+    </form>
   );
 }
