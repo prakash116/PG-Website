@@ -23,7 +23,7 @@ export function FAQ() {
           </h2>
           <p className="mt-4 text-base text-muted-foreground sm:text-lg">
             Everything you need to know about finding, comparing and moving
-            into a PG with Pzzee.
+            into a PG with Pzee.
           </p>
         </AnimatedSection>
 

@@ -73,7 +73,7 @@ export function Testimonials() {
         <SectionHeader
           eyebrow="Real stays, real stories"
           title="Loved by Students & Professionals"
-          subtitle="Thousands have found their next home through Pzzee — here's what a few of them say."
+          subtitle="Thousands have found their next home through Pzee — here's what a few of them say."
           align="center"
         />
       </div>

@@ -92,7 +92,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isRegistering: false, registration: null, error: null }),
     }),
     {
-      name: "pzzee-auth-session",
+      name: "pzee-auth-session",
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         accessToken: state.accessToken,

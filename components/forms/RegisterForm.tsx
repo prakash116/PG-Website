@@ -297,7 +297,7 @@ export function RegisterForm() {
         <SectionHeading
           step="01"
           title="Account type"
-          description="Tell us how you plan to use Pzzee."
+          description="Tell us how you plan to use Pzee."
         />
 
         <fieldset className="mt-5">

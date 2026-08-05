@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Star } from "lucide-react";
-import { PzzeeMark } from "@/components/common/Logo";
+import { PzeeMark } from "@/components/common/Logo";
 import { LoginForm } from "@/components/forms/LoginForm";
 import { AnimatedSection } from "@/components/common/AnimatedSection";
 
 export const metadata: Metadata = {
   title: "Login",
   description:
-    "Log in to Pzzee with your phone number or email to save favourites, book visits and manage your PG search.",
+    "Log in to Pzee with your phone number or email to save favourites, book visits and manage your PG search.",
 };
 
 export default function LoginPage() {
@@ -27,7 +27,7 @@ export default function LoginPage() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-ink/20" />
             <div className="relative flex h-full flex-col justify-between p-10">
-              <PzzeeMark className="size-11" />
+              <PzeeMark className="size-11" />
               <div>
                 <div className="mb-3 flex gap-0.5">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -51,7 +51,7 @@ export default function LoginPage() {
           {/* Form panel */}
           <div className="p-6 sm:p-10">
             <h1 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
-              Welcome to Pzzee
+              Welcome to Pzee
             </h1>
             <p className="mt-2 mb-8 text-sm text-muted-foreground sm:text-[15px]">
               Log in to save favourites, book visits and pick up your search

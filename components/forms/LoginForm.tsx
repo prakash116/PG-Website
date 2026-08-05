@@ -195,7 +195,7 @@ export function LoginForm() {
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        New to Pzzee?{" "}
+        New to Pzee?{" "}
         <Link
           href="/register"
           className="font-semibold text-brand-ink hover:underline"

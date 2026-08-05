@@ -8,7 +8,7 @@ export const testimonials: Testimonial[] = [
     city: "Delhi",
     rating: 5,
     review:
-      "I shifted cities for college and found my PG on Pzzee in two days. The photos matched exactly what I saw during the visit — that almost never happens.",
+      "I shifted cities for college and found my PG on Pzee in two days. The photos matched exactly what I saw during the visit — that almost never happens.",
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
     featured: true,
   },
@@ -29,7 +29,7 @@ export const testimonials: Testimonial[] = [
     city: "Pune",
     rating: 4,
     review:
-      "As someone who's been burned by fake listings before, the Pzzee Verified badge is the reason I trust this platform. Details were checked and accurate.",
+      "As someone who's been burned by fake listings before, the Pzee Verified badge is the reason I trust this platform. Details were checked and accurate.",
     avatar: "https://randomuser.me/api/portraits/women/68.jpg",
   },
   {

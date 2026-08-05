@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { label: "Find PG", href: "/pg" },
   { label: "Rooms", href: "/#rooms" },
   { label: "Locations", href: "/#locations" },
-  { label: "About", href: "/#why-pzzee" },
+  { label: "About", href: "/#why-pzee" },
   { label: "FAQ", href: "/#faq" },
 ];
 

@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BadgeCheck, MessagesSquare, ShieldCheck, Wallet } from "lucide-react";
-import { PzzeeMark } from "@/components/common/Logo";
+import { PzeeMark } from "@/components/common/Logo";
 import { AnimatedSection } from "@/components/common/AnimatedSection";
 import { RegisterForm } from "@/components/forms/RegisterForm";
 
 export const metadata: Metadata = {
   title: "Create Account",
   description:
-    "Create your Pzzee account to find verified PGs or list and manage your property.",
+    "Create your Pzee account to find verified PGs or list and manage your property.",
 };
 
 const BENEFITS = [
@@ -57,10 +57,10 @@ export default function RegisterPage() {
               />
 
               <div className="relative">
-                <PzzeeMark className="size-12" />
+                <PzeeMark className="size-12" />
 
                 <p className="mt-7 text-xs font-bold tracking-[0.18em] text-primary uppercase">
-                  Join Pzzee
+                  Join Pzee
                 </p>
                 <h1 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-balance sm:text-[2.1rem] sm:leading-[1.15]">
                   One account. Every verified PG.

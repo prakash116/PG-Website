@@ -4,7 +4,7 @@ import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 
 export const metadata: Metadata = {
   title: "PG Owner Dashboard",
-  description: "Manage your Pzzee properties and room availability.",
+  description: "Manage your Pzee properties and room availability.",
 };
 
 const OWNER_METRICS = [

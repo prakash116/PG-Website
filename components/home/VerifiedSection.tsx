@@ -64,7 +64,7 @@ export function VerifiedSection() {
             </span>
             <div>
               <p className="font-display text-sm font-extrabold text-foreground">
-                Pzzee Verified
+                Pzee Verified
               </p>
               <p className="text-xs text-muted-foreground">
                 5-point property check
@@ -83,7 +83,7 @@ export function VerifiedSection() {
               Stay Verified. Stay Worry-Free.
             </h2>
             <p className="mt-4 max-w-lg text-base text-muted-foreground sm:text-lg">
-              Before a property earns the Pzzee Verified badge, our team checks
+              Before a property earns the Pzee Verified badge, our team checks
               it in person and on paper — so what you see online is exactly
               what you get at the door.
             </p>

@@ -21,9 +21,9 @@ const LINK_COLUMNS = [
   {
     heading: "Company",
     links: [
-      { label: "About Us", href: "/#why-pzzee" },
+      { label: "About Us", href: "/#why-pzee" },
       { label: "Contact", href: "/#faq" },
-      { label: "Careers", href: "/#why-pzzee" },
+      { label: "Careers", href: "/#why-pzee" },
     ],
   },
   {
@@ -59,16 +59,16 @@ export function Footer() {
 
   return (
     <footer className="overflow-hidden bg-ink text-white/75">
-      <div className="container-page pt-16 pb-10 sm:pt-20">
-        <div className="grid gap-12 lg:grid-cols-12">
+      <div className="container-page pt-10 pb-6 sm:pt-12">
+        <div className="grid gap-8 lg:grid-cols-12">
           {/* Brand */}
           <div className="lg:col-span-4">
             <Logo tone="light" />
-            <p className="mt-5 max-w-xs text-[15px] leading-relaxed text-white/60">
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/60">
               Helping you discover trusted PGs and rooms without the usual
               hassle.
             </p>
-            <div className="mt-6 flex gap-2.5">
+            <div className="mt-4 flex gap-2">
               {SOCIALS.map(({ label, icon: Icon, href }) => (
                 <a
                   key={label}
@@ -76,7 +76,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="flex size-10 items-center justify-center rounded-full bg-white/5 text-white/75 transition-colors hover:bg-primary hover:text-primary-foreground"
+                  className="flex size-9 items-center justify-center rounded-full bg-white/5 text-white/75 transition-colors hover:bg-primary hover:text-primary-foreground"
                 >
                   <Icon className="size-4" />
                 </a>
@@ -91,12 +91,12 @@ export function Footer() {
                 <h3 className="text-sm font-semibold tracking-wide text-white uppercase">
                   {col.heading}
                 </h3>
-                <ul className="mt-4 space-y-3">
+                <ul className="mt-3 space-y-2.5">
                   {col.links.map((link) => (
                     <li key={link.label}>
                       <Link
                         href={link.href}
-                        className="text-[15px] text-white/60 transition-colors hover:text-white"
+                        className="text-sm text-white/60 transition-colors hover:text-white"
                       >
                         {link.label}
                       </Link>
@@ -109,9 +109,9 @@ export function Footer() {
         </div>
 
         {/* Newsletter */}
-        <div className="mt-14 flex flex-col gap-5 rounded-3xl border border-white/10 bg-white/5 p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mt-9 flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h3 className="font-display text-xl font-bold text-white">
+            <h3 className="font-display text-lg font-bold text-white">
               Get PG updates in your inbox
             </h3>
             <p className="mt-1 text-sm text-white/60">
@@ -131,11 +131,11 @@ export function Footer() {
               type="email"
               placeholder="you@example.com"
               autoComplete="email"
-              className="h-12 flex-1 rounded-full border-white/15 bg-white/10 px-5 text-white placeholder:text-white/40"
+              className="h-11 flex-1 rounded-full border-white/15 bg-white/10 px-4 text-white placeholder:text-white/40"
             />
             <Button
               type="submit"
-              className="h-12 shrink-0 rounded-full bg-primary px-6 font-semibold text-primary-foreground hover:bg-primary/90"
+              className="h-11 shrink-0 rounded-full bg-primary px-5 font-semibold text-primary-foreground hover:bg-primary/90"
             >
               Subscribe
               <Send className="size-4" data-icon="inline-end" />
@@ -144,8 +144,8 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-white/45 sm:flex-row">
-          <p>© 2026 Pzzee. All rights reserved.</p>
+        <div className="mt-7 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-5 text-sm text-white/45 sm:flex-row">
+          <p>© 2026 Pzee. All rights reserved.</p>
           <p>
             Made for students & professionals across India{" "}
             <span aria-hidden="true">🇮🇳</span>
@@ -156,9 +156,9 @@ export function Footer() {
       {/* Oversized watermark */}
       <div
         aria-hidden="true"
-        className="pointer-events-none -mb-[4vw] text-center font-display text-[22vw] leading-[0.75] font-extrabold tracking-tight text-white/[0.04] select-none"
+        className="pointer-events-none -mb-[3vw] text-center font-display text-[20vw] leading-[0.68] font-extrabold tracking-tight text-white/[0.04] select-none lg:text-[18vw]"
       >
-        pzzee
+        Pzee
       </div>
     </footer>
   );

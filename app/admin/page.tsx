@@ -4,7 +4,7 @@ import { DashboardOverview } from "@/components/dashboard/DashboardOverview";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
-  description: "Pzzee administration dashboard.",
+  description: "Pzee administration dashboard.",
 };
 
 const ADMIN_METRICS = [
@@ -16,7 +16,7 @@ const ADMIN_METRICS = [
   {
     label: "PG owners",
     value: "—",
-    description: "Property owners currently registered on Pzzee.",
+    description: "Property owners currently registered on Pzee.",
   },
   {
     label: "Active properties",

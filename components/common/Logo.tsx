@@ -4,7 +4,7 @@ import brandLogo from "@/public/logo.png";
 import { cn } from "@/lib/utils";
 
 /** Shared image mark used in the site logo and login panel. */
-export function PzzeeMark({ className }: { className?: string }) {
+export function PzeeMark({ className }: { className?: string }) {
   return (
     <Image
       src={brandLogo}
@@ -25,10 +25,10 @@ export function Logo({ tone = "dark", className }: LogoProps) {
   return (
     <Link
       href="/"
-      aria-label="Pzzee — home"
+      aria-label="Pzee — home"
       className={cn("flex items-center gap-2.5", className)}
     >
-      <PzzeeMark />
+      <PzeeMark />
       <span
         className={cn(
           "font-display text-2xl font-extrabold tracking-tight",

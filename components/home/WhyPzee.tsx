@@ -36,11 +36,11 @@ const FEATURES: Feature[] = [
   },
 ];
 
-export function WhyPzzee() {
+export function WhyPzee() {
   return (
-    <section id="why-pzzee" className="container-page scroll-mt-24 py-20 sm:py-24">
+    <section id="why-pzee" className="container-page scroll-mt-24 py-20 sm:py-24">
       <SectionHeader
-        eyebrow="Why Pzzee"
+        eyebrow="Why Pzee"
         title="PG Hunting, Made Simple."
         subtitle="We rebuilt the PG search from scratch so you never have to rely on hearsay, brokers or blurry WhatsApp photos again."
         align="center"

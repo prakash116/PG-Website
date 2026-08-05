@@ -3,7 +3,7 @@ import { SearchBar } from "@/components/home/SearchBar";
 import { AvailablePG } from "@/components/home/AvailablePG";
 import { RoomTypes } from "@/components/home/RoomTypes";
 import { BudgetSearch } from "@/components/home/BudgetSearch";
-import { WhyPzzee } from "@/components/home/WhyPzzee";
+import { WhyPzee } from "@/components/home/WhyPzee";
 import { VerifiedSection } from "@/components/home/VerifiedSection";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { PopularLocations } from "@/components/home/PopularLocations";
@@ -19,7 +19,7 @@ export default function HomePage() {
       <AvailablePG />
       <RoomTypes />
       <BudgetSearch />
-      <WhyPzzee />
+      <WhyPzee />
       <VerifiedSection />
       <HowItWorks />
       <PopularLocations />

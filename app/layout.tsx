@@ -19,13 +19,13 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pzzee.in"),
+  metadataBase: new URL("https://pzee.in"),
   title: {
-    default: "Pzzee – Find Verified PGs & Rooms Near You",
-    template: "%s | Pzzee",
+    default: "Pzee – Find Verified PGs & Rooms Near You",
+    template: "%s | Pzee",
   },
   description:
-    "Discover trusted and verified PG accommodation according to your location, room preference and monthly budget with Pzzee.",
+    "Discover trusted and verified PG accommodation according to your location, room preference and monthly budget with Pzee.",
   keywords: [
     "PG",
     "paying guest",
@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     "student accommodation",
   ],
   openGraph: {
-    title: "Pzzee – Find Verified PGs & Rooms Near You",
+    title: "Pzee – Find Verified PGs & Rooms Near You",
     description:
-      "Discover trusted and verified PG accommodation according to your location, room preference and monthly budget with Pzzee.",
-    siteName: "Pzzee",
+      "Discover trusted and verified PG accommodation according to your location, room preference and monthly budget with Pzee.",
+    siteName: "Pzee",
     type: "website",
   },
 };

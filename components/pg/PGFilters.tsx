@@ -246,7 +246,7 @@ export function PGFilters({ filters, onChange, className }: PGFiltersProps) {
             htmlFor="filter-verified"
             className="text-sm font-normal text-foreground"
           >
-            Pzzee Verified only
+            Pzee Verified only
           </Label>
         </div>
       </div>

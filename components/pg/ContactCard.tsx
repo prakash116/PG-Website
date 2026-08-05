@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 
 export function ContactCard({ pg }: { pg: PG }) {
   const whatsappHref = `https://wa.me/${pg.owner.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
-    `Hi, I found ${pg.name} (${pg.location}, ${pg.city}) on Pzzee and would like to know more.`
+    `Hi, I found ${pg.name} (${pg.location}, ${pg.city}) on Pzee and would like to know more.`
   )}`;
 
   return (
