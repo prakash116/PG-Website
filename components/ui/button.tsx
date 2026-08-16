@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -47,12 +48,28 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  render,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+  const classes = cn(buttonVariants({ variant, size, className }))
+
+  // A link that looks like a button is still a link. Base UI's primitive assumes
+  // `render` produces a native <button>: it warns in dev otherwise, and the
+  // `nativeButton={false}` escape hatch stamps role="button" over the anchor
+  // semantics. So render the element directly with the button classes instead.
+  if (React.isValidElement<{ className?: string }>(render) && render.type !== "button") {
+    return React.cloneElement(render, {
+      ...props,
+      "data-slot": "button",
+      className: cn(classes, render.props.className),
+    } as React.Attributes & { className?: string })
+  }
+
   return (
     <ButtonPrimitive
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      render={render}
+      className={classes}
       {...props}
     />
   )

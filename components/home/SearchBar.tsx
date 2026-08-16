@@ -166,9 +166,17 @@ export function SearchBar() {
           {/* Submit */}
           <Button
             type="submit"
-            className="h-full min-h-13 rounded-2xl px-7 text-base font-semibold shadow-lg shadow-primary/25"
+            className="relative h-full min-h-13 gap-2.5 overflow-hidden rounded-2xl bg-linear-to-b from-saffron-500 to-saffron-600 px-8 text-base font-semibold tracking-tight shadow-[inset_0_1px_0_rgb(255_255_255/0.3),0_10px_22px_-8px_var(--saffron-700)] transition-[transform,box-shadow,filter] duration-200 hover:-translate-y-0.5 hover:brightness-[1.06] hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.3),0_16px_32px_-8px_var(--saffron-700)] lg:px-9"
           >
-            <Search className="size-4.5" data-icon="inline-start" />
+            {/* Light sweep on hover — decorative only. */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 -left-full w-1/2 skew-x-12 bg-linear-to-r from-transparent via-white/25 to-transparent transition-[left] duration-700 ease-out group-hover/button:left-full"
+            />
+            <Search
+              className="size-4.5 transition-transform duration-200 group-hover/button:scale-110"
+              data-icon="inline-start"
+            />
             Search PG
           </Button>
         </div>
