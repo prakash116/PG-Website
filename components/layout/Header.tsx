@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import toast from "react-hot-toast";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LoaderCircle, LogOut, UserRound } from "lucide-react";
 import { Logo } from "@/components/common/Logo";
+import { ProfileMenu } from "@/components/layout/ProfileMenu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth-store";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -38,6 +41,18 @@ export function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const isSessionResolved = useAuthStore((state) => state.isSessionResolved);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+
+  // The header is on every page, so this is where the session cookie is checked
+  // once per load — which also extends it by another 30 days.
+  const loadSession = useAuthStore((state) => state.loadSession);
+  useEffect(() => {
+    void loadSession();
+  }, [loadSession]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -63,6 +78,12 @@ export function Header() {
 
   // The homepage opens with a dark hero, so the header starts transparent there.
   const transparent = pathname === "/" && !scrolled && !open;
+
+  async function handleMobileLogout() {
+    await logout();
+    toast.success("Logged out.");
+    setOpen(false);
+  }
 
   return (
     <>
@@ -106,28 +127,38 @@ export function Header() {
             })}
           </nav>
 
-          <div className="hidden items-center gap-2 lg:flex">
-            <Button
-              variant="ghost"
-              render={<Link href="/login" />}
-              className={cn(
-                "h-10 rounded-full px-5 text-sm font-semibold",
-                transparent && "text-white hover:bg-white/10 hover:text-white"
-              )}
-            >
-              Login
-            </Button>
-            <Button
-              variant="outline"
-              render={<Link href="/register" />}
-              className={cn(
-                "h-10 rounded-full px-5 text-sm font-semibold",
-                transparent &&
-                  "border-white/35 bg-white/10 text-white hover:bg-white/20 hover:text-white"
-              )}
-            >
-              Register
-            </Button>
+          {/* Rendered only once the session is known, so the buttons never
+              flip from Login/Register to the profile icon after load. */}
+          <div className="hidden min-h-10 items-center gap-2 lg:flex">
+            {isSessionResolved &&
+              (isAuthenticated ? (
+                <ProfileMenu transparent={transparent} />
+              ) : (
+                <>
+                  <Button
+                    variant="ghost"
+                    render={<Link href="/login" />}
+                    className={cn(
+                      "h-10 rounded-full px-5 text-sm font-semibold",
+                      transparent &&
+                        "text-white hover:bg-white/10 hover:text-white"
+                    )}
+                  >
+                    Login
+                  </Button>
+                  <Button
+                    variant="outline"
+                    render={<Link href="/register" />}
+                    className={cn(
+                      "h-10 rounded-full px-5 text-sm font-semibold",
+                      transparent &&
+                        "border-white/35 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                    )}
+                  >
+                    Register
+                  </Button>
+                </>
+              ))}
           </div>
 
           {/* Animated hamburger */}
@@ -192,21 +223,57 @@ export function Header() {
                 </motion.div>
               ))}
               <motion.div variants={menuItem} className="mt-8 flex flex-col gap-3">
-                <Button
-                  render={<Link href="/register" />}
-                  onClick={() => setOpen(false)}
-                  className="h-12 rounded-full text-base font-semibold"
-                >
-                  Register
-                </Button>
-                <Button
-                  variant="outline"
-                  render={<Link href="/login" />}
-                  onClick={() => setOpen(false)}
-                  className="h-12 rounded-full text-base font-semibold"
-                >
-                  Login
-                </Button>
+                {isSessionResolved &&
+                  (isAuthenticated && user ? (
+                    <>
+                      <div className="flex items-center gap-3 rounded-2xl border bg-card px-4 py-3">
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+                          <UserRound className="size-5" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-foreground">
+                            {[user.firstName, user.lastName]
+                              .filter(Boolean)
+                              .join(" ")}
+                          </p>
+                          <p className="truncate text-xs text-muted-foreground">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        disabled={isLoggingOut}
+                        onClick={() => void handleMobileLogout()}
+                        className="h-12 gap-2 rounded-full text-base font-semibold"
+                      >
+                        {isLoggingOut ? (
+                          <LoaderCircle className="size-4.5 animate-spin" />
+                        ) : (
+                          <LogOut className="size-4.5" />
+                        )}
+                        {isLoggingOut ? "Logging out..." : "Logout"}
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        render={<Link href="/register" />}
+                        onClick={() => setOpen(false)}
+                        className="h-12 rounded-full text-base font-semibold"
+                      >
+                        Register
+                      </Button>
+                      <Button
+                        variant="outline"
+                        render={<Link href="/login" />}
+                        onClick={() => setOpen(false)}
+                        className="h-12 rounded-full text-base font-semibold"
+                      >
+                        Login
+                      </Button>
+                    </>
+                  ))}
               </motion.div>
             </motion.nav>
           </motion.div>
