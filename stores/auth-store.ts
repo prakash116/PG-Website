@@ -1,8 +1,9 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 import { ApiError } from "@/lib/api/client";
 import {
+  fetchSession,
   loginUser,
+  logoutUser,
   registerUser,
   type AuthenticatedUser,
   type LoginPayload,
@@ -14,91 +15,118 @@ import {
 interface AuthState {
   isLoggingIn: boolean;
   isRegistering: boolean;
-  accessToken: string | null;
+  isLoggingOut: boolean;
+  /** False until the session cookie has been checked once on load. */
+  isSessionResolved: boolean;
   user: AuthenticatedUser | null;
   isAuthenticated: boolean;
   registration: RegisterResponse | null;
   error: string | null;
   login: (payload: LoginPayload) => Promise<LoginResponse>;
   register: (payload: RegisterPayload) => Promise<RegisterResponse>;
-  logout: () => void;
+  loadSession: () => Promise<void>;
+  logout: () => Promise<void>;
   clearError: () => void;
   resetRegistration: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      isLoggingIn: false,
-      isRegistering: false,
-      accessToken: null,
+// Shared so a page with several mounted consumers only checks the session once.
+let sessionRequest: Promise<void> | null = null;
+
+export const useAuthStore = create<AuthState>()((set, get) => ({
+  isLoggingIn: false,
+  isRegistering: false,
+  isLoggingOut: false,
+  isSessionResolved: false,
+  user: null,
+  isAuthenticated: false,
+  registration: null,
+  error: null,
+
+  login: async (payload) => {
+    set({ isLoggingIn: true, error: null });
+
+    try {
+      const response = await loginUser(payload);
+      set({
+        isLoggingIn: false,
+        user: response.data.user,
+        isAuthenticated: true,
+        isSessionResolved: true,
+      });
+      return response;
+    } catch (error: unknown) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "Unable to connect to the login service. Please try again.";
+
+      set({ isLoggingIn: false, error: message });
+      throw new Error(message);
+    }
+  },
+
+  register: async (payload) => {
+    set({ isRegistering: true, registration: null, error: null });
+
+    try {
+      const registration = await registerUser(payload);
+      set({ isRegistering: false, registration });
+      return registration;
+    } catch (error: unknown) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "Unable to connect to the registration service. Please try again.";
+
+      set({ isRegistering: false, error: message });
+      throw new Error(message);
+    }
+  },
+
+  loadSession: async () => {
+    if (get().isSessionResolved) return;
+    if (sessionRequest) return sessionRequest;
+
+    sessionRequest = (async () => {
+      try {
+        const session = await fetchSession();
+        set({
+          user: session.data,
+          isAuthenticated: true,
+          isSessionResolved: true,
+        });
+      } catch {
+        // No cookie, or it expired: the visitor is simply signed out.
+        set({ user: null, isAuthenticated: false, isSessionResolved: true });
+      } finally {
+        sessionRequest = null;
+      }
+    })();
+
+    return sessionRequest;
+  },
+
+  logout: async () => {
+    set({ isLoggingOut: true });
+
+    try {
+      await logoutUser();
+    } catch {
+      // The cookie may already be gone; sign out locally either way.
+    }
+
+    set({
+      isLoggingOut: false,
       user: null,
       isAuthenticated: false,
-      registration: null,
+      isSessionResolved: true,
       error: null,
+    });
+  },
 
-      login: async (payload) => {
-        set({ isLoggingIn: true, error: null });
+  clearError: () => set({ error: null }),
 
-        try {
-          const response = await loginUser(payload);
-          set({
-            isLoggingIn: false,
-            accessToken: response.data.accessToken,
-            user: response.data.user,
-            isAuthenticated: true,
-          });
-          return response;
-        } catch (error: unknown) {
-          const message =
-            error instanceof ApiError
-              ? error.message
-              : "Unable to connect to the login service. Please try again.";
-
-          set({ isLoggingIn: false, error: message });
-          throw new Error(message);
-        }
-      },
-
-      register: async (payload) => {
-        set({ isRegistering: true, registration: null, error: null });
-
-        try {
-          const registration = await registerUser(payload);
-          set({ isRegistering: false, registration });
-          return registration;
-        } catch (error: unknown) {
-          const message =
-            error instanceof ApiError
-              ? error.message
-              : "Unable to connect to the registration service. Please try again.";
-
-          set({ isRegistering: false, error: message });
-          throw new Error(message);
-        }
-      },
-
-      logout: () =>
-        set({
-          accessToken: null,
-          user: null,
-          isAuthenticated: false,
-          error: null,
-        }),
-
-      clearError: () => set({ error: null }),
-
-      resetRegistration: () =>
-        set({ isRegistering: false, registration: null, error: null }),
-    }),
-    {
-      name: "pzee-auth-session",
-      storage: createJSONStorage(() => sessionStorage),
-      partialize: (state) => ({
-        accessToken: state.accessToken,
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-      }),
-    }
-  )
-);
+  resetRegistration: () =>
+    set({ isRegistering: false, registration: null, error: null }),
+}));

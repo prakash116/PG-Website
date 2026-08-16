@@ -61,16 +61,28 @@ export interface AuthenticatedUser {
   role: UserRole;
   userType: UserType | null;
   profileImage: string | null;
-  lastLogin: string;
+  lastLogin: string | null;
 }
 
+// The access token is never returned in the body: the API sets it as an
+// HttpOnly cookie that JavaScript cannot read.
 export interface LoginResponse {
   success: true;
   message: "Login successful.";
   data: {
-    accessToken: string;
     user: AuthenticatedUser;
   };
+}
+
+export interface SessionResponse {
+  success: true;
+  message: "Session is active.";
+  data: AuthenticatedUser;
+}
+
+export interface LogoutResponse {
+  success: true;
+  message: "Logout successful.";
 }
 
 export function registerUser(
@@ -87,4 +99,13 @@ export function loginUser(payload: LoginPayload): Promise<LoginResponse> {
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+/** Reads the signed-in user from the session cookie and extends it by 30 days. */
+export function fetchSession(): Promise<SessionResponse> {
+  return apiRequest<SessionResponse>("/v1/auth/me");
+}
+
+export function logoutUser(): Promise<LogoutResponse> {
+  return apiRequest<LogoutResponse>("/v1/auth/logout", { method: "POST" });
 }

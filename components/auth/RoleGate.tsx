@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoaderCircle } from "lucide-react";
 import type { UserRole } from "@/lib/api/auth";
@@ -12,29 +12,19 @@ interface RoleGateProps {
   children: React.ReactNode;
 }
 
-function subscribeToAuthHydration(onStoreChange: () => void) {
-  const unsubscribeHydrate = useAuthStore.persist.onHydrate(onStoreChange);
-  const unsubscribeFinish =
-    useAuthStore.persist.onFinishHydration(onStoreChange);
-
-  return () => {
-    unsubscribeHydrate();
-    unsubscribeFinish();
-  };
-}
-
 export function RoleGate({ role, children }: RoleGateProps) {
   const router = useRouter();
-  const hasHydrated = useSyncExternalStore(
-    subscribeToAuthHydration,
-    () => useAuthStore.persist.hasHydrated(),
-    () => false
-  );
+  const isSessionResolved = useAuthStore((state) => state.isSessionResolved);
+  const loadSession = useAuthStore((state) => state.loadSession);
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   useEffect(() => {
-    if (!hasHydrated) return;
+    void loadSession();
+  }, [loadSession]);
+
+  useEffect(() => {
+    if (!isSessionResolved) return;
 
     if (!isAuthenticated || !user) {
       router.replace("/login");
@@ -44,9 +34,9 @@ export function RoleGate({ role, children }: RoleGateProps) {
     if (user.role !== role) {
       router.replace(getRoleDestination(user.role));
     }
-  }, [hasHydrated, isAuthenticated, role, router, user]);
+  }, [isSessionResolved, isAuthenticated, role, router, user]);
 
-  if (!hasHydrated || !isAuthenticated || !user || user.role !== role) {
+  if (!isSessionResolved || !isAuthenticated || !user || user.role !== role) {
     return (
       <div className="flex min-h-[70svh] items-center justify-center pt-24">
         <LoaderCircle className="size-8 animate-spin text-brand-ink" />

@@ -1,4 +1,6 @@
-const DEFAULT_API_BASE_URL = "http://127.0.0.1:5000/api";
+// Uses `localhost` so the dev site (localhost:3000) and the API share a site and
+// the browser accepts the session cookie. Ports do not affect SameSite.
+const DEFAULT_API_BASE_URL = "http://localhost:5000/api";
 
 const configuredApiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
 
@@ -52,6 +54,8 @@ export async function apiRequest<T>(
   const response = await fetch(`${API_BASE_URL}${normalizedPath}`, {
     ...init,
     headers,
+    // Sends and receives the HttpOnly session cookie.
+    credentials: "include",
   });
 
   const payload: unknown = await response.json().catch(() => null);
