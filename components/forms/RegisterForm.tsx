@@ -1,17 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import {
   Building2,
   Check,
   CheckCircle2,
+  Copy,
   Eye,
   EyeOff,
+  ImagePlus,
   LoaderCircle,
   Lock,
+  MapPin,
   Search,
+  Trash2,
   UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,48 +30,45 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import type {
-  RegistrationRole,
-  RegisterPayload,
-  UserGender,
-  UserType,
+import {
+  uploadProfileImage,
+  type RegistrationRole,
+  type RegisterPayload,
+  type UserGender,
+  type UserType,
 } from "@/lib/api/auth";
 import { useAuthStore } from "@/stores/auth-store";
 
 interface RegisterFormState {
-  firstName: string;
-  lastName: string;
+  role: RegistrationRole;
+  fullName: string;
   email: string;
   phone: string;
   password: string;
   confirmPassword: string;
-  role: RegistrationRole;
+  // "Find a PG" only
+  address: string;
+  dateOfBirth: string;
   userType: UserType | "";
   gender: UserGender | "";
-  dateOfBirth: string;
-  country: string;
-  state: string;
-  city: string;
-  address: string;
-  pincode: string;
+  // "List a PG" only
+  pgName: string;
+  pgLocation: string;
 }
 
 const INITIAL_FORM: RegisterFormState = {
-  firstName: "",
-  lastName: "",
+  role: "USER",
+  fullName: "",
   email: "",
   phone: "",
   password: "",
   confirmPassword: "",
-  role: "USER",
+  address: "",
+  dateOfBirth: "",
   userType: "",
   gender: "",
-  dateOfBirth: "",
-  country: "India",
-  state: "",
-  city: "",
-  address: "",
-  pincode: "",
+  pgName: "",
+  pgLocation: "",
 };
 
 const ROLE_OPTIONS: Array<{
@@ -116,11 +117,15 @@ const PASSWORD_RULES: Array<{ label: string; test: (value: string) => boolean }>
 const PASSWORD_PATTERN =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
-function validateForm(form: RegisterFormState): string | null {
-  const firstName = form.firstName.trim();
+/** Mirrors the API limit, so an oversized file fails before the round trip. */
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const ACCEPTED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-  if (firstName.length < 2 || firstName.length > 50) {
-    return "First name must be between 2 and 50 characters.";
+function validateForm(form: RegisterFormState): string | null {
+  const fullName = form.fullName.trim();
+
+  if (fullName.length < 2 || fullName.length > 100) {
+    return "Please enter your full name.";
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
@@ -139,35 +144,61 @@ function validateForm(form: RegisterFormState): string | null {
     return "Passwords do not match.";
   }
 
-  if (
-    !form.country.trim() ||
-    !form.state.trim() ||
-    !form.city.trim() ||
-    !form.address.trim() ||
-    !form.pincode.trim()
-  ) {
-    return "Please complete all required address fields.";
+  if (form.role === "USER") {
+    if (!form.address.trim()) {
+      return "Please enter your address.";
+    }
+
+    if (!form.dateOfBirth) {
+      return "Please enter your date of birth.";
+    }
+
+    if (new Date(form.dateOfBirth) >= new Date()) {
+      return "Date of birth must be in the past.";
+    }
+
+    return null;
+  }
+
+  if (form.pgName.trim().length < 2) {
+    return "Please enter your PG house name.";
+  }
+
+  if (!form.pgLocation.trim()) {
+    return "Please enter your PG location.";
   }
 
   return null;
 }
 
-function createPayload(form: RegisterFormState): RegisterPayload {
-  return {
-    firstName: form.firstName.trim(),
-    ...(form.lastName.trim() && { lastName: form.lastName.trim() }),
+function createPayload(
+  form: RegisterFormState,
+  profileImage: string | null
+): RegisterPayload {
+  const shared = {
+    fullName: form.fullName.trim().replace(/\s+/g, " "),
     email: form.email.trim().toLowerCase(),
     phone: form.phone,
     password: form.password,
-    role: form.role,
+    ...(profileImage && { profileImage }),
+  };
+
+  if (form.role === "PG_OWNER") {
+    return {
+      ...shared,
+      role: "PG_OWNER",
+      pgName: form.pgName.trim(),
+      pgLocation: form.pgLocation.trim(),
+    };
+  }
+
+  return {
+    ...shared,
+    role: "USER",
+    address: form.address.trim(),
+    dateOfBirth: form.dateOfBirth,
     ...(form.userType && { userType: form.userType }),
     ...(form.gender && { gender: form.gender }),
-    ...(form.dateOfBirth && { dateOfBirth: form.dateOfBirth }),
-    country: form.country.trim(),
-    state: form.state.trim(),
-    city: form.city.trim(),
-    address: form.address.trim(),
-    pincode: form.pincode.trim(),
   };
 }
 
@@ -211,18 +242,83 @@ export function RegisterForm() {
   const [form, setForm] = useState<RegisterFormState>(INITIAL_FORM);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
   const isRegistering = useAuthStore((state) => state.isRegistering);
   const registration = useAuthStore((state) => state.registration);
   const error = useAuthStore((state) => state.error);
   const register = useAuthStore((state) => state.register);
   const clearError = useAuthStore((state) => state.clearError);
-  const resetRegistration = useAuthStore(
-    (state) => state.resetRegistration
-  );
+  const resetRegistration = useAuthStore((state) => state.resetRegistration);
+
+  const isOwner = form.role === "PG_OWNER";
+
+  // Object URLs leak until they are revoked.
+  useEffect(() => {
+    return () => {
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
+    };
+  }, [photoPreview]);
 
   function set(patch: Partial<RegisterFormState>) {
     setForm((previous) => ({ ...previous, ...patch }));
     if (error) clearError();
+  }
+
+  function clearPhoto() {
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhotoPreview(null);
+    setPhotoUrl(null);
+    if (photoInputRef.current) photoInputRef.current.value = "";
+  }
+
+  /** Uploaded as soon as it is picked, so submitting only sends a URL. */
+  async function handlePhotoChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!ACCEPTED_PHOTO_TYPES.includes(file.type)) {
+      toast.error("Please choose a JPEG, PNG or WebP image.");
+      clearPhoto();
+      return;
+    }
+
+    if (file.size > MAX_PHOTO_BYTES) {
+      toast.error("Please choose an image smaller than 5 MB.");
+      clearPhoto();
+      return;
+    }
+
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhotoPreview(URL.createObjectURL(file));
+    setIsUploadingPhoto(true);
+
+    try {
+      setPhotoUrl(await uploadProfileImage(file));
+    } catch (uploadError: unknown) {
+      toast.error(
+        uploadError instanceof Error
+          ? uploadError.message
+          : "Could not upload the photo. Please try again."
+      );
+      clearPhoto();
+    } finally {
+      setIsUploadingPhoto(false);
+    }
+  }
+
+  async function copyPgCode(pgCode: string) {
+    try {
+      await navigator.clipboard.writeText(pgCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Could not copy. Please copy the ID manually.");
+    }
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -234,9 +330,15 @@ export function RegisterForm() {
       return;
     }
 
+    if (isUploadingPhoto) {
+      toast.error("Please wait for the photo to finish uploading.");
+      return;
+    }
+
     try {
-      const response = await register(createPayload(form));
+      const response = await register(createPayload(form, photoUrl));
       setForm(INITIAL_FORM);
+      clearPhoto();
       toast.success(response.message);
     } catch (requestError: unknown) {
       toast.error(
@@ -248,6 +350,9 @@ export function RegisterForm() {
   }
 
   if (registration) {
+    const registered = registration.data;
+    const pg = registered.pg;
+
     return (
       <div
         role="status"
@@ -258,18 +363,52 @@ export function RegisterForm() {
         </span>
         <h2 className="mt-5 font-display text-2xl font-bold">Account created</h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-          {registration.data.firstName}, your account for{" "}
+          {registered.firstName}, your account for{" "}
           <span className="font-semibold text-foreground">
-            {registration.data.email}
+            {registered.email}
           </span>{" "}
-          is ready.
+          is ready and you are signed in.
         </p>
+
+        {pg && (
+          <div className="mx-auto mt-7 max-w-sm rounded-2xl border bg-card p-5 text-left">
+            <p className="text-xs font-bold tracking-[0.14em] text-muted-foreground uppercase">
+              Your PG ID
+            </p>
+            <div className="mt-2.5 flex items-center gap-3">
+              <code className="flex-1 rounded-xl bg-secondary px-3.5 py-2.5 font-display text-lg font-extrabold tracking-wider text-brand-ink">
+                {pg.pgCode}
+              </code>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => copyPgCode(pg.pgCode)}
+                aria-label="Copy PG ID"
+                className="size-11 shrink-0 rounded-xl p-0"
+              >
+                {copied ? (
+                  <Check className="size-4 text-success" strokeWidth={3} />
+                ) : (
+                  <Copy className="size-4" />
+                )}
+              </Button>
+            </div>
+            <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+              Share this ID so residents and our team can find{" "}
+              <span className="font-semibold text-foreground">{pg.name}</span>.
+              Keep it safe — it identifies your property across Pzee.
+            </p>
+          </div>
+        )}
+
         <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
           <Button
-            render={<Link href="/login" />}
+            render={
+              <Link href={pg ? "/pg-owner/dashboard" : "/pg"} />
+            }
             className="h-11 rounded-full px-6 font-semibold"
           >
-            Continue to login
+            {pg ? "Go to dashboard" : "Browse PGs"}
           </Button>
           <Button
             type="button"
@@ -358,66 +497,62 @@ export function RegisterForm() {
           </div>
         </fieldset>
 
-        <fieldset className="mt-5">
-          <legend className="mb-2.5 text-sm font-medium text-foreground">
-            You are
-          </legend>
-          <div className="flex flex-wrap gap-2">
-            {USER_TYPE_OPTIONS.map((option) => {
-              const selected = form.userType === option.value;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  aria-pressed={selected}
-                  onClick={() =>
-                    set({ userType: selected ? "" : option.value })
-                  }
-                  className={cn(
-                    "h-10 rounded-full border px-4 text-sm font-medium transition-all",
-                    selected
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground"
-                  )}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
-          </div>
-        </fieldset>
+        {/* Only a resident describes themselves this way. */}
+        {!isOwner && (
+          <fieldset className="mt-5">
+            <legend className="mb-2.5 text-sm font-medium text-foreground">
+              You are
+            </legend>
+            <div className="flex flex-wrap gap-2">
+              {USER_TYPE_OPTIONS.map((option) => {
+                const selected = form.userType === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() =>
+                      set({ userType: selected ? "" : option.value })
+                    }
+                    className={cn(
+                      "h-10 rounded-full border px-4 text-sm font-medium transition-all",
+                      selected
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
       </section>
 
-      {/* 02 — Personal details */}
+      {/* 02 — Contact details */}
       <section className={sectionBox}>
         <SectionHeading
           step="02"
-          title="Personal details"
-          description="How owners and our team will reach you."
+          title={isOwner ? "Owner details" : "Your details"}
+          description={
+            isOwner
+              ? "How residents and our team will reach you."
+              : "How PG owners and our team will reach you."
+          }
         />
         <div className={gridBox}>
-          <div className={fieldBox}>
-            <Label htmlFor="register-first-name">
-              First name <Req />
+          <div className={cn(fieldBox, "sm:col-span-2")}>
+            <Label htmlFor="register-full-name">
+              {isOwner ? "Owner name" : "Full name"} <Req />
             </Label>
             <Input
-              id="register-first-name"
-              value={form.firstName}
-              onChange={(event) => set({ firstName: event.target.value })}
-              placeholder="Ananya"
-              autoComplete="given-name"
-              maxLength={50}
-              className={inputStyle}
-            />
-          </div>
-          <div className={fieldBox}>
-            <Label htmlFor="register-last-name">Last name</Label>
-            <Input
-              id="register-last-name"
-              value={form.lastName}
-              onChange={(event) => set({ lastName: event.target.value })}
-              placeholder="Sharma"
-              autoComplete="family-name"
+              id="register-full-name"
+              value={form.fullName}
+              onChange={(event) => set({ fullName: event.target.value })}
+              placeholder="Ananya Sharma"
+              autoComplete="name"
+              maxLength={100}
               className={inputStyle}
             />
           </div>
@@ -459,124 +594,182 @@ export function RegisterForm() {
               />
             </div>
           </div>
-          <div className={fieldBox}>
-            <Label htmlFor="register-gender">Gender</Label>
-            <Select
-              value={form.gender || null}
-              onValueChange={(value) =>
-                set({ gender: (value as UserGender | null) ?? "" })
-              }
-            >
-              <SelectTrigger
-                id="register-gender"
-                className="h-12 w-full rounded-xl bg-card"
-              >
-                <SelectValue placeholder="Select gender" />
-              </SelectTrigger>
-              <SelectContent>
-                {GENDER_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className={fieldBox}>
-            <Label htmlFor="register-date-of-birth">Date of birth</Label>
-            <Input
-              id="register-date-of-birth"
-              type="date"
-              value={form.dateOfBirth}
-              onChange={(event) => set({ dateOfBirth: event.target.value })}
-              autoComplete="bday"
-              className={inputStyle}
-            />
-          </div>
+
+          {!isOwner && (
+            <>
+              <div className={fieldBox}>
+                <Label htmlFor="register-date-of-birth">
+                  Date of birth <Req />
+                </Label>
+                <Input
+                  id="register-date-of-birth"
+                  type="date"
+                  value={form.dateOfBirth}
+                  onChange={(event) => set({ dateOfBirth: event.target.value })}
+                  autoComplete="bday"
+                  className={inputStyle}
+                />
+              </div>
+              <div className={fieldBox}>
+                <Label htmlFor="register-gender">Gender</Label>
+                <Select
+                  value={form.gender || null}
+                  onValueChange={(value) =>
+                    set({ gender: (value as UserGender | null) ?? "" })
+                  }
+                >
+                  <SelectTrigger
+                    id="register-gender"
+                    className="h-12 w-full rounded-xl bg-card"
+                  >
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {GENDER_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="register-address">
+                  Address <Req />
+                </Label>
+                <Textarea
+                  id="register-address"
+                  value={form.address}
+                  onChange={(event) => set({ address: event.target.value })}
+                  placeholder="House / flat number, street, area, city"
+                  autoComplete="street-address"
+                  rows={3}
+                  className="rounded-xl bg-card"
+                />
+              </div>
+            </>
+          )}
         </div>
       </section>
 
-      {/* 03 — Address */}
+      {/* 03 — PG details, owners only */}
+      {isOwner && (
+        <section className={sectionBox}>
+          <SectionHeading
+            step="03"
+            title="PG details"
+            description="We create your PG and give it a unique PG ID."
+          />
+          <div className={gridBox}>
+            <div className={cn(fieldBox, "sm:col-span-2")}>
+              <Label htmlFor="register-pg-name">
+                PG house name <Req />
+              </Label>
+              <Input
+                id="register-pg-name"
+                value={form.pgName}
+                onChange={(event) => set({ pgName: event.target.value })}
+                placeholder="Sunrise Boys PG"
+                maxLength={120}
+                className={inputStyle}
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="register-pg-location">
+                PG location <Req />
+              </Label>
+              <div className="relative">
+                <MapPin className="pointer-events-none absolute top-3.5 left-3.5 size-4 text-muted-foreground" />
+                <Textarea
+                  id="register-pg-location"
+                  value={form.pgLocation}
+                  onChange={(event) => set({ pgLocation: event.target.value })}
+                  placeholder="Building, street, area, city and pincode"
+                  rows={3}
+                  className="rounded-xl bg-card pl-10"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Profile photo — optional for both roles */}
       <section className={sectionBox}>
         <SectionHeading
-          step="03"
-          title="Address"
-          description="Your current address — it stays private."
+          step={isOwner ? "04" : "03"}
+          title="Profile photo"
+          description="Optional. JPEG, PNG or WebP, up to 5 MB."
         />
-        <div className={gridBox}>
-          <div className={fieldBox}>
-            <Label htmlFor="register-country">
-              Country <Req />
-            </Label>
-            <Input
-              id="register-country"
-              value={form.country}
-              onChange={(event) => set({ country: event.target.value })}
-              autoComplete="country-name"
-              className={inputStyle}
+        <div className="mt-5 flex flex-wrap items-center gap-4">
+          <span className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border bg-card">
+            {photoPreview ? (
+              // Local object URL preview; next/image is not useful for a blob.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={photoPreview}
+                alt="Profile photo preview"
+                className="size-full object-cover"
+              />
+            ) : (
+              <ImagePlus className="size-6 text-muted-foreground" />
+            )}
+          </span>
+
+          <div className="flex flex-wrap items-center gap-2.5">
+            <input
+              ref={photoInputRef}
+              id="register-photo"
+              type="file"
+              accept={ACCEPTED_PHOTO_TYPES.join(",")}
+              onChange={handlePhotoChange}
+              className="sr-only"
             />
-          </div>
-          <div className={fieldBox}>
-            <Label htmlFor="register-state">
-              State <Req />
-            </Label>
-            <Input
-              id="register-state"
-              value={form.state}
-              onChange={(event) => set({ state: event.target.value })}
-              placeholder="Delhi"
-              autoComplete="address-level1"
-              className={inputStyle}
-            />
-          </div>
-          <div className={fieldBox}>
-            <Label htmlFor="register-city">
-              City <Req />
-            </Label>
-            <Input
-              id="register-city"
-              value={form.city}
-              onChange={(event) => set({ city: event.target.value })}
-              placeholder="New Delhi"
-              autoComplete="address-level2"
-              className={inputStyle}
-            />
-          </div>
-          <div className={fieldBox}>
-            <Label htmlFor="register-pincode">
-              Pincode <Req />
-            </Label>
-            <Input
-              id="register-pincode"
-              value={form.pincode}
-              onChange={(event) => set({ pincode: event.target.value })}
-              placeholder="110001"
-              inputMode="numeric"
-              autoComplete="postal-code"
-              className={inputStyle}
-            />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="register-address">
-              Address <Req />
-            </Label>
-            <Textarea
-              id="register-address"
-              value={form.address}
-              onChange={(event) => set({ address: event.target.value })}
-              placeholder="House / flat number, street, landmark"
-              autoComplete="street-address"
-              rows={3}
-              className="rounded-xl bg-card"
-            />
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isUploadingPhoto}
+              onClick={() => photoInputRef.current?.click()}
+              className="h-11 rounded-full px-5 font-semibold"
+            >
+              {isUploadingPhoto ? (
+                <LoaderCircle className="size-4 animate-spin" />
+              ) : (
+                <ImagePlus className="size-4" />
+              )}
+              {isUploadingPhoto
+                ? "Uploading..."
+                : photoUrl
+                  ? "Change photo"
+                  : "Choose photo"}
+            </Button>
+
+            {photoUrl && !isUploadingPhoto && (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={clearPhoto}
+                className="h-11 rounded-full px-4 font-semibold text-muted-foreground"
+              >
+                <Trash2 className="size-4" />
+                Remove
+              </Button>
+            )}
+
+            {photoUrl && !isUploadingPhoto && (
+              <span className="flex items-center gap-1.5 text-[13px] font-medium text-success">
+                <Check className="size-4" strokeWidth={3} />
+                Photo uploaded
+              </span>
+            )}
           </div>
         </div>
       </section>
 
-      {/* 04 — Password */}
+      {/* Password */}
       <section className={sectionBox}>
         <SectionHeading
-          step="04"
+          step={isOwner ? "05" : "04"}
           title="Secure your account"
           description="Pick a password you don't use anywhere else."
         />
@@ -691,7 +884,7 @@ export function RegisterForm() {
         </p>
         <Button
           type="submit"
-          disabled={isRegistering}
+          disabled={isRegistering || isUploadingPhoto}
           className="h-12 w-full shrink-0 rounded-full px-8 text-[15px] font-semibold sm:w-auto"
         >
           {isRegistering ? (

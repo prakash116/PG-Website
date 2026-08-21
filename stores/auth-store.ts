@@ -71,7 +71,28 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
     try {
       const registration = await registerUser(payload);
-      set({ isRegistering: false, registration });
+      const registered = registration.data;
+
+      // The API issues the session cookie on register, so the new account is
+      // already signed in. Mirror that here instead of making them log in.
+      set({
+        isRegistering: false,
+        registration,
+        user: {
+          id: registered.id,
+          firstName: registered.firstName,
+          lastName: registered.lastName,
+          email: registered.email,
+          phone: registered.phone,
+          role: registered.role,
+          userType: registered.userType,
+          profileImage: registered.profileImage,
+          lastLogin: null,
+        },
+        isAuthenticated: true,
+        isSessionResolved: true,
+      });
+
       return registration;
     } catch (error: unknown) {
       const message =

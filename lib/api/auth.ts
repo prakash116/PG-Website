@@ -13,21 +13,41 @@ export type UserType =
 
 export type UserGender = "MALE" | "FEMALE" | "OTHER";
 
-export interface RegisterPayload {
-  firstName: string;
-  lastName?: string;
+/** Shared by both registration shapes. */
+interface RegisterPayloadBase {
+  fullName: string;
   email: string;
   phone: string;
   password: string;
-  role: RegistrationRole;
+  /** URL returned by `uploadProfileImage`. */
+  profileImage?: string;
+}
+
+/** "Find a PG": someone looking for a place to stay. */
+export interface SeekerRegisterPayload extends RegisterPayloadBase {
+  role: "USER";
+  address: string;
+  dateOfBirth: string;
   userType?: UserType;
   gender?: UserGender;
-  dateOfBirth?: string;
-  country: string;
-  state: string;
-  city: string;
-  address: string;
-  pincode: string;
+}
+
+/** "List a PG": an owner, whose PG is created alongside the account. */
+export interface OwnerRegisterPayload extends RegisterPayloadBase {
+  role: "PG_OWNER";
+  pgName: string;
+  pgLocation: string;
+}
+
+export type RegisterPayload = SeekerRegisterPayload | OwnerRegisterPayload;
+
+/** The PG created with a PG_OWNER account. */
+export interface RegisteredPg {
+  id: string;
+  /** Unique, shareable PG identifier, e.g. PZ-4F7K2A. */
+  pgCode: string;
+  name: string;
+  location: string;
 }
 
 export interface RegisteredUser {
@@ -38,13 +58,22 @@ export interface RegisteredUser {
   phone: string;
   role: RegistrationRole;
   userType: UserType | null;
+  profileImage: string | null;
   createdAt: string;
+  /** Present only for accounts registered as a PG owner. */
+  pg: RegisteredPg | null;
 }
 
 export interface RegisterResponse {
   success: true;
   message: "Registration successful.";
   data: RegisteredUser;
+}
+
+export interface UploadImageResponse {
+  success: true;
+  message: "Image uploaded successfully.";
+  data: { url: string };
 }
 
 export interface LoginPayload {
@@ -85,6 +114,10 @@ export interface LogoutResponse {
   message: "Logout successful.";
 }
 
+/**
+ * Registers a PG seeker or a PG owner. The API sets the session cookie on
+ * success, so the new account is signed in straight away.
+ */
 export function registerUser(
   payload: RegisterPayload
 ): Promise<RegisterResponse> {
@@ -92,6 +125,19 @@ export function registerUser(
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+/** Uploads a profile photo and returns its URL, for use as `profileImage`. */
+export async function uploadProfileImage(file: File): Promise<string> {
+  const body = new FormData();
+  body.append("file", file);
+
+  const response = await apiRequest<UploadImageResponse>(
+    "/v1/uploads/profile-image",
+    { method: "POST", body }
+  );
+
+  return response.data.url;
 }
 
 export function loginUser(payload: LoginPayload): Promise<LoginResponse> {

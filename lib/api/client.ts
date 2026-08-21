@@ -46,7 +46,12 @@ export async function apiRequest<T>(
   const headers = new Headers(init.headers);
   headers.set("Accept", "application/json");
 
-  if (init.body && !headers.has("Content-Type")) {
+  // FormData is left alone: the browser has to set its own multipart boundary.
+  if (
+    init.body &&
+    !headers.has("Content-Type") &&
+    !(init.body instanceof FormData)
+  ) {
     headers.set("Content-Type", "application/json");
   }
 
