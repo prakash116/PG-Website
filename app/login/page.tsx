@@ -50,6 +50,8 @@ export default function LoginPage() {
 
           {/* Form panel */}
           <div className="p-6 sm:p-10">
+            {/* The brand panel is hidden below lg, so carry the mark here. */}
+            <PzeeMark className="mb-5 size-10 lg:hidden" />
             <h1 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
               Welcome to Pzee
             </h1>

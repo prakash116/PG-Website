@@ -86,14 +86,14 @@ export function LoginForm() {
         <TabsList className="h-12 w-full rounded-full bg-secondary p-1.5">
           <TabsTrigger
             value="email"
-            className="h-full flex-1 rounded-full text-sm"
+            className="h-full flex-1 rounded-full text-sm font-semibold data-active:bg-card data-active:text-brand-ink data-active:shadow-[0_2px_8px_rgb(38_22_10/0.08)]"
           >
             <Mail className="size-4" />
             Email
           </TabsTrigger>
           <TabsTrigger
             value="phone"
-            className="h-full flex-1 rounded-full text-sm"
+            className="h-full flex-1 rounded-full text-sm font-semibold data-active:bg-card data-active:text-brand-ink data-active:shadow-[0_2px_8px_rgb(38_22_10/0.08)]"
           >
             <Smartphone className="size-4" />
             Phone
@@ -103,25 +103,28 @@ export function LoginForm() {
         <TabsContent value="email" className="mt-6">
           <div className="space-y-2">
             <Label htmlFor="login-email">Email</Label>
-            <Input
-              id="login-email"
-              type="email"
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-                clearLoginError();
-              }}
-              placeholder="you@example.com"
-              autoComplete="email"
-              className="h-12 rounded-xl"
-            />
+            <div className="relative">
+              <Mail className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="login-email"
+                type="email"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  clearLoginError();
+                }}
+                placeholder="you@example.com"
+                autoComplete="email"
+                className="h-12 rounded-xl pl-10"
+              />
+            </div>
           </div>
         </TabsContent>
 
         <TabsContent value="phone" className="mt-6">
           <div className="space-y-2">
-            <Label htmlFor="login-phone">Mobile Number</Label>
-            <div className="flex overflow-hidden rounded-xl border focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
+            <Label htmlFor="login-phone">Mobile number</Label>
+            <div className="flex h-12 overflow-hidden rounded-xl border bg-card focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
               <span className="flex items-center border-r bg-secondary px-3.5 text-sm font-semibold text-secondary-foreground">
                 +91
               </span>
@@ -138,7 +141,7 @@ export function LoginForm() {
                 }}
                 placeholder="98765 43210"
                 autoComplete="tel-national"
-                className="h-12 flex-1 rounded-none border-0 shadow-none focus-visible:border-transparent focus-visible:ring-0"
+                className="h-full flex-1 rounded-none border-0 bg-transparent shadow-none focus-visible:border-transparent focus-visible:ring-0"
               />
             </div>
           </div>

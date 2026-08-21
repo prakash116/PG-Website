@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import {
   Building2,
@@ -37,6 +38,7 @@ import {
   type UserGender,
   type UserType,
 } from "@/lib/api/auth";
+import { getRoleDestination } from "@/lib/auth/roles";
 import { useAuthStore } from "@/stores/auth-store";
 
 interface RegisterFormState {
@@ -239,6 +241,7 @@ function Req() {
 }
 
 export function RegisterForm() {
+  const router = useRouter();
   const [form, setForm] = useState<RegisterFormState>(INITIAL_FORM);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -340,6 +343,14 @@ export function RegisterForm() {
       setForm(INITIAL_FORM);
       clearPhoto();
       toast.success(response.message);
+
+      // A PG finder is already signed in and has nothing left to record, so
+      // send them straight on. An owner stays here to copy their PG ID, which
+      // is shown only once.
+      if (response.data.role === "USER") {
+        resetRegistration();
+        router.replace(getRoleDestination(response.data.role));
+      }
     } catch (requestError: unknown) {
       toast.error(
         requestError instanceof Error

@@ -23,8 +23,14 @@ function Tabs({
   )
 }
 
+// The horizontal height is deliberately a plain `h-8`. It used to carry a
+// group-data orientation prefix, and tailwind-merge only dedupes classes within
+// the same variant group — so a caller's plain height survived alongside it and
+// the prefixed one won on cascade order, pinning the list to 32px. Unprefixed,
+// tailwind-merge drops it in favour of the caller's height. The vertical
+// override below still wins, because it keeps its prefix.
 const tabsListVariants = cva(
-  "group/tabs-list inline-flex w-fit items-center justify-center rounded-lg p-[3px] text-muted-foreground group-data-horizontal/tabs:h-8 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none",
+  "group/tabs-list inline-flex h-8 w-fit items-center justify-center rounded-lg p-[3px] text-muted-foreground group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none",
   {
     variants: {
       variant: {
