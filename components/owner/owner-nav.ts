@@ -38,7 +38,6 @@ export const OWNER_NAV: OwnerNavItem[] = [
     href: "/pg-owner/analytics",
     icon: ChartNoAxesColumn,
     description: "Occupancy and earnings",
-    isPreview: true,
   },
   {
     label: "PG Info",
