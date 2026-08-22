@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { BackToTop } from "@/components/common/BackToTop";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -56,10 +53,8 @@ export default function RootLayout({
       className={`${inter.variable} ${jakarta.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col overflow-x-clip bg-background font-sans text-foreground">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <BackToTop />
+        {/* Site chrome lives in (site)/layout, dashboard chrome in (owner)/layout. */}
+        {children}
         <Toaster
           position="top-center"
           toastOptions={{

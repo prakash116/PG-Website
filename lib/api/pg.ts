@@ -12,6 +12,11 @@ export interface PgRoomTypeDetail {
   /** Derived by the API from roomCount. */
   totalBeds: number;
   availableBeds: number;
+  /** Four fixed photo slots. Null only on rows created before photos existed. */
+  roomImage1: string | null;
+  roomImage2: string | null;
+  bathroomImage: string | null;
+  otherImage: string | null;
 }
 
 export interface PgTotals {
@@ -80,7 +85,21 @@ export interface RoomTypeInput {
   roomCount: number;
   pricePerBed: number;
   availableBeds: number;
+  roomImage1: string;
+  roomImage2: string;
+  bathroomImage: string;
+  otherImage: string;
 }
+
+/** The four photo slots, in the order they are shown to the owner. */
+export const ROOM_IMAGE_SLOTS = [
+  { key: 'roomImage1', label: 'Room photo 1' },
+  { key: 'roomImage2', label: 'Room photo 2' },
+  { key: 'bathroomImage', label: 'Bathroom' },
+  { key: 'otherImage', label: 'Kitchen or other' },
+] as const;
+
+export type RoomImageSlot = (typeof ROOM_IMAGE_SLOTS)[number]['key'];
 
 /** How many beds each room type holds. Mirrors the API, for live previews. */
 export const BEDS_PER_ROOM: Record<RoomType, number> = {
@@ -162,6 +181,19 @@ export async function uploadPgImage(file: File): Promise<string> {
 
   const response = await apiRequest<{ data: { url: string } }>(
     "/v1/uploads/pg-image",
+    { method: "POST", body }
+  );
+
+  return response.data.url;
+}
+
+/** Uploads one room-type photo and returns its URL. */
+export async function uploadRoomImage(file: File): Promise<string> {
+  const body = new FormData();
+  body.append("file", file);
+
+  const response = await apiRequest<{ data: { url: string } }>(
+    "/v1/uploads/room-image",
     { method: "POST", body }
   );
 

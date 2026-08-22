@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 
 export default function NotFound() {
   return (
-    <div className="container-page flex min-h-svh flex-col items-center justify-center py-32 text-center">
+    <>
+      <Header />
+      <div className="container-page flex min-h-svh flex-col items-center justify-center py-32 text-center">
       <span className="flex size-16 items-center justify-center rounded-3xl bg-accent text-accent-foreground">
         <Compass className="size-8" />
       </span>
@@ -34,5 +38,7 @@ export default function NotFound() {
         </Button>
       </div>
     </div>
+      <Footer />
+    </>
   );
 }
