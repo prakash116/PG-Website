@@ -27,6 +27,7 @@ import {
 } from "@/lib/api/pg";
 import { usePgStore } from "@/stores/pg-store";
 import { PageHeader } from "../PageHeader";
+import { PgLogoField } from "./PgLogoField";
 import {
   NoPgState,
   PgErrorState,
@@ -51,6 +52,7 @@ interface FormState {
   cooling: Cooling | "";
   foodIncluded: boolean;
   foodDetails: string;
+  logo: string;
   amenities: string[];
   images: string[];
 }
@@ -67,6 +69,7 @@ function toState(pg: PgDetail): FormState {
     cooling: pg.cooling ?? "",
     foodIncluded: pg.foodIncluded,
     foodDetails: pg.foodDetails ?? "",
+    logo: pg.logo ?? "",
     amenities: pg.amenities,
     images: pg.images,
   };
@@ -223,6 +226,7 @@ function PgInfoForm({ pg }: { pg: PgDetail }) {
         amenities: form.amenities,
         foodIncluded: form.foodIncluded,
         foodDetails: form.foodIncluded ? form.foodDetails.trim() : "",
+        logo: form.logo,
         images: form.images,
       });
       toast.success("PG details saved.");
@@ -282,6 +286,13 @@ function PgInfoForm({ pg }: { pg: PgDetail }) {
               </div>
             </div>
           </div>
+        </Card>
+
+        <Card title="Logo" hint="Your PG brand mark. Square images look best.">
+          <PgLogoField
+            value={form.logo}
+            onChange={(logo) => set({ logo })}
+          />
         </Card>
 
         <Card title="Who it is for" hint="Residents filter on this first.">

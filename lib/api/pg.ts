@@ -45,6 +45,8 @@ export interface PgDetail {
   cooling: Cooling | null;
   foodIncluded: boolean;
   foodDetails: string | null;
+  /** Square brand mark for the PG. */
+  logo: string | null;
   amenities: string[];
   images: string[];
   /** Set by a Super Admin; owners cannot change it. */
@@ -76,6 +78,8 @@ export interface UpdatePgPayload {
   cooling?: Cooling;
   foodIncluded?: boolean;
   foodDetails?: string;
+  /** Send an empty string to remove the current logo. */
+  logo?: string;
   amenities?: string[];
   images?: string[];
 }
@@ -194,6 +198,19 @@ export async function uploadRoomImage(file: File): Promise<string> {
 
   const response = await apiRequest<{ data: { url: string } }>(
     "/v1/uploads/room-image",
+    { method: "POST", body }
+  );
+
+  return response.data.url;
+}
+
+/** Uploads a PG logo and returns its URL. */
+export async function uploadPgLogo(file: File): Promise<string> {
+  const body = new FormData();
+  body.append("file", file);
+
+  const response = await apiRequest<{ data: { url: string } }>(
+    "/v1/uploads/logo-image",
     { method: "POST", body }
   );
 
