@@ -10,6 +10,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+export interface OwnerNavChild {
+  label: string;
+  href: string;
+}
+
 export interface OwnerNavItem {
   label: string;
   href: string;
@@ -17,6 +22,8 @@ export interface OwnerNavItem {
   description: string;
   /** Sections whose data source is not built yet. */
   isPreview?: boolean;
+  /** Renders the item as an expandable group. */
+  children?: OwnerNavChild[];
 }
 
 export const OWNER_NAV: OwnerNavItem[] = [
@@ -50,6 +57,10 @@ export const OWNER_NAV: OwnerNavItem[] = [
     href: "/pg-owner/crm",
     icon: UsersRound,
     description: "Guests, dues and collections",
+    children: [
+      { label: "Total guests", href: "/pg-owner/crm" },
+      { label: "Services", href: "/pg-owner/crm/services" },
+    ],
   },
   {
     label: "Payments",
@@ -62,8 +73,7 @@ export const OWNER_NAV: OwnerNavItem[] = [
     label: "Customers",
     href: "/pg-owner/customers",
     icon: Users,
-    description: "Visits, ratings and queries",
-    isPreview: true,
+    description: "Visit requests from the website",
   },
   {
     label: "Settings",

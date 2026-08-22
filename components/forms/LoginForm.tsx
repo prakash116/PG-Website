@@ -63,7 +63,16 @@ export function LoginForm() {
     try {
       const response = await login({ identifier, password });
       toast.success(response.message);
-      router.replace(getRoleDestination(response.data.user.role));
+      // Somewhere sent them here to sign in, e.g. booking a visit. Read at
+      // submit time rather than with useSearchParams, which would force this
+      // page out of the static export. Only in-app paths are followed, so
+      // this can never bounce the visitor to another site.
+      const next = new URLSearchParams(window.location.search).get("next");
+      router.replace(
+        next && next.startsWith("/")
+          ? next
+          : getRoleDestination(response.data.user.role)
+      );
     } catch (requestError: unknown) {
       toast.error(
         requestError instanceof Error

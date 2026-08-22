@@ -1,14 +1,21 @@
 "use client";
 
-import toast from "react-hot-toast";
 import { FaWhatsapp } from "react-icons/fa6";
-import { CalendarCheck, Clock, Phone, ShieldCheck } from "lucide-react";
+import { Clock, Phone, ShieldCheck } from "lucide-react";
 import type { PG } from "@/lib/types";
 import { formatINR } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { BookVisitButton } from "./BookVisitButton";
 
-export function ContactCard({ pg }: { pg: PG }) {
+export function ContactCard({
+  pg,
+  pgCode,
+}: {
+  pg: PG;
+  /** Set on a real listing; sample listings cannot take bookings. */
+  pgCode?: string;
+}) {
   const whatsappHref = `https://wa.me/${pg.owner.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
     `Hi, I found ${pg.name} (${pg.location}, ${pg.city}) on Pzee and would like to know more.`
   )}`;
@@ -58,17 +65,7 @@ export function ContactCard({ pg }: { pg: PG }) {
       </div>
 
       <div className="mt-5 flex flex-col gap-2.5">
-        <Button
-          onClick={() =>
-            toast.success(
-              "Visit request sent! The property will confirm your slot shortly."
-            )
-          }
-          className="h-12 w-full rounded-full text-[15px] font-semibold"
-        >
-          <CalendarCheck className="size-4.5" data-icon="inline-start" />
-          Book a Visit
-        </Button>
+        <BookVisitButton pgCode={pgCode} pgName={pg.name} />
         <div className="grid grid-cols-2 gap-2.5">
           <Button
             variant="outline"
