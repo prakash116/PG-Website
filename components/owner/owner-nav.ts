@@ -50,7 +50,6 @@ export const OWNER_NAV: OwnerNavItem[] = [
     href: "/pg-owner/crm",
     icon: UsersRound,
     description: "Guests, dues and collections",
-    isPreview: true,
   },
   {
     label: "Payments",

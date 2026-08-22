@@ -86,9 +86,7 @@ export interface UpdatePgPayload {
 
 export interface RoomTypeInput {
   type: RoomType;
-  roomCount: number;
   pricePerBed: number;
-  availableBeds: number;
   roomImage1: string;
   roomImage2: string;
   bathroomImage: string;
@@ -160,25 +158,71 @@ export function updateMyPg(payload: UpdatePgPayload): Promise<PgResponse> {
   });
 }
 
-/** Sends the full set; a type left out is removed. */
+/** Sends the full set of room types; one left out is removed. */
 export function replaceRooms(rooms: RoomTypeInput[]): Promise<PgResponse> {
-  return apiRequest<PgResponse>("/v1/pg/me/rooms", {
+  return apiRequest<PgResponse>("/v1/pg/me/room-types", {
     method: "PUT",
     body: JSON.stringify({ rooms }),
   });
 }
 
-export function updateAvailability(
-  type: RoomType,
-  availableBeds: number
-): Promise<PgResponse> {
-  return apiRequest<PgResponse>(`/v1/pg/me/rooms/${type}`, {
-    method: "PATCH",
-    body: JSON.stringify({ availableBeds }),
-  });
+export interface Room {
+  id: string;
+  number: string;
+  type: RoomType;
+  floor: string | null;
+  totalBeds: number;
+  occupiedBeds: number;
+  availableBeds: number;
 }
 
-/** Uploads one PG photo and returns its URL, to add to `images`. */
+export interface CreateRoomsPayload {
+  type: RoomType;
+  /** With a count, numbers run on from here: 201, 202, 203. */
+  startNumber: string;
+  count?: number;
+  floor?: string;
+  totalBeds?: number;
+}
+
+interface RoomsResponse {
+  data: Room[];
+}
+
+export async function fetchRooms(): Promise<Room[]> {
+  const response = await apiRequest<RoomsResponse>("/v1/pg/me/rooms");
+  return response.data;
+}
+
+export async function createRooms(
+  payload: CreateRoomsPayload
+): Promise<Room[]> {
+  const response = await apiRequest<RoomsResponse>("/v1/pg/me/rooms", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+}
+
+export async function updateRoom(
+  id: string,
+  payload: { number?: string; floor?: string; totalBeds?: number }
+): Promise<Room[]> {
+  const response = await apiRequest<RoomsResponse>(`/v1/pg/me/rooms/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return response.data;
+}
+
+export async function deleteRoom(id: string): Promise<Room[]> {
+  const response = await apiRequest<RoomsResponse>(`/v1/pg/me/rooms/${id}`, {
+    method: "DELETE",
+  });
+  return response.data;
+}
+
+/** Uploads a PG gallery photo and returns its URL. */
 export async function uploadPgImage(file: File): Promise<string> {
   const body = new FormData();
   body.append("file", file);

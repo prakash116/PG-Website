@@ -31,7 +31,6 @@ interface RoomRow {
   offered: boolean;
   roomCount: string;
   pricePerBed: string;
-  availableBeds: string;
   /** Empty string means that photo slot is still open. */
   images: Record<RoomImageSlot, string>;
 }
@@ -49,7 +48,6 @@ function toRows(pg: PgDetail): Record<RoomType, RoomRow> {
       offered: Boolean(existing),
       roomCount: existing ? String(existing.roomCount) : "",
       pricePerBed: existing ? String(existing.pricePerBed) : "",
-      availableBeds: existing ? String(existing.availableBeds) : "",
       images: {
         roomImage1: existing?.roomImage1 ?? "",
         roomImage2: existing?.roomImage2 ?? "",
@@ -97,10 +95,9 @@ function RoomsForm({ pg }: { pg: PgDetail }) {
       return {
         rooms: running.rooms + count,
         beds: running.beds + count * BEDS_PER_ROOM[type],
-        free: running.free + Number(row.availableBeds || 0),
       };
     },
-    { rooms: 0, beds: 0, free: 0 }
+    { rooms: 0, beds: 0 }
   );
 
   async function handleSave() {
@@ -112,8 +109,6 @@ function RoomsForm({ pg }: { pg: PgDetail }) {
 
       const roomCount = Number(row.roomCount || 0);
       const pricePerBed = Number(row.pricePerBed || 0);
-      const availableBeds = Number(row.availableBeds || 0);
-      const capacity = roomCount * BEDS_PER_ROOM[type];
 
       if (roomCount < 1) {
         toast.error(`${ROOM_TYPE_LABELS[type]}: enter how many rooms you have.`);
@@ -122,13 +117,6 @@ function RoomsForm({ pg }: { pg: PgDetail }) {
 
       if (pricePerBed < 1) {
         toast.error(`${ROOM_TYPE_LABELS[type]}: enter the rent per bed.`);
-        return;
-      }
-
-      if (availableBeds > capacity) {
-        toast.error(
-          `${ROOM_TYPE_LABELS[type]}: ${availableBeds} free beds is more than the ${capacity} these rooms hold.`
-        );
         return;
       }
 
@@ -143,13 +131,7 @@ function RoomsForm({ pg }: { pg: PgDetail }) {
         return;
       }
 
-      payload.push({
-        type,
-        roomCount,
-        pricePerBed,
-        availableBeds,
-        ...row.images,
-      });
+      payload.push({ type, pricePerBed, ...row.images });
     }
 
     try {
@@ -177,11 +159,10 @@ function RoomsForm({ pg }: { pg: PgDetail }) {
         className="grid gap-5 pb-24"
       >
         {/* Live totals, so the owner sees the effect before saving. */}
-        <section className="grid gap-4 sm:grid-cols-3">
+        <section className="grid gap-4 sm:grid-cols-2">
           {[
             { label: "Rooms", value: totals.rooms },
             { label: "Beds", value: totals.beds },
-            { label: "Free beds", value: totals.free },
           ].map((tile) => (
             <article key={tile.label} className="rounded-2xl border bg-card p-5">
               <p className="text-sm font-medium text-muted-foreground">
@@ -225,7 +206,7 @@ function RoomsForm({ pg }: { pg: PgDetail }) {
                 </label>
 
                 {row.offered && (
-                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     <div className="space-y-1.5">
                       <Label
                         htmlFor={`rooms-${type}`}
@@ -266,27 +247,7 @@ function RoomsForm({ pg }: { pg: PgDetail }) {
                         className="h-11 rounded-xl bg-card"
                       />
                     </div>
-                    <div className="space-y-1.5">
-                      <Label
-                        htmlFor={`free-${type}`}
-                        className="text-xs text-muted-foreground"
-                      >
-                        Free beds
-                      </Label>
-                      <Input
-                        id={`free-${type}`}
-                        inputMode="numeric"
-                        value={row.availableBeds}
-                        onChange={(event) =>
-                          setRow(type, {
-                            availableBeds: digitsOnly(event.target.value),
-                          })
-                        }
-                        placeholder="4"
-                        className="h-11 rounded-xl bg-card"
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground sm:col-span-3">
+                    <p className="text-xs text-muted-foreground sm:col-span-2">
                       {capacity > 0
                         ? `Holds ${capacity} bed${capacity > 1 ? "s" : ""} in total.`
                         : "Enter a room count to see the total beds."}
@@ -310,9 +271,8 @@ function RoomsForm({ pg }: { pg: PgDetail }) {
 
         <p className="flex gap-2 rounded-xl border bg-card p-4 text-[13px] leading-relaxed text-muted-foreground">
           <Info className="mt-0.5 size-4 shrink-0" />
-          Free beds are entered by hand for now. Once the CRM tracks residents,
-          this will be worked out from who is actually staying, and this field
-          will go away.
+          Free beds are worked out from the guests recorded in the CRM, so there
+          is nothing to type here. Add or check out a guest to change them.
         </p>
 
         <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-card/95 p-4 backdrop-blur-sm lg:left-64">

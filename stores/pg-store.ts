@@ -3,10 +3,8 @@ import { ApiError } from "@/lib/api/client";
 import {
   fetchMyPg,
   replaceRooms,
-  updateAvailability,
   updateMyPg,
   type PgDetail,
-  type RoomType,
   type RoomTypeInput,
   type UpdatePgPayload,
 } from "@/lib/api/pg";
@@ -21,7 +19,6 @@ interface PgState {
   load: () => Promise<void>;
   saveDetails: (payload: UpdatePgPayload) => Promise<void>;
   saveRooms: (rooms: RoomTypeInput[]) => Promise<void>;
-  setAvailability: (type: RoomType, availableBeds: number) => Promise<void>;
   clearError: () => void;
 }
 
@@ -83,21 +80,6 @@ export const usePgStore = create<PgState>()((set, get) => ({
     }
   },
 
-  setAvailability: async (type, availableBeds) => {
-    set({ isSaving: true, error: null });
-
-    try {
-      const response = await updateAvailability(type, availableBeds);
-      set({ pg: response.data, isSaving: false });
-    } catch (error: unknown) {
-      const message = messageFor(
-        error,
-        "Could not update availability. Please try again."
-      );
-      set({ isSaving: false, error: message });
-      throw new Error(message);
-    }
-  },
 
   clearError: () => set({ error: null }),
 }));
