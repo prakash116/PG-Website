@@ -1,6 +1,14 @@
-// Uses `localhost` so the dev site (localhost:3000) and the API share a site and
-// the browser accepts the session cookie. Ports do not affect SameSite.
-const DEFAULT_API_BASE_URL = "http://localhost:5000/api";
+// In development, `localhost` keeps the site and the API on one site so the
+// browser accepts the session cookie; ports do not affect SameSite.
+//
+// The production default is a real URL on purpose. NEXT_PUBLIC_* is inlined at
+// build time, so a build that forgets the variable would otherwise ship
+// `http://localhost:5000` to every visitor — pointing their browser at their
+// own machine, and blocked as mixed content from an https page anyway.
+const DEFAULT_API_BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://pg-backend-pozw.onrender.com/api"
+    : "http://localhost:5000/api";
 
 const configuredApiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
 
