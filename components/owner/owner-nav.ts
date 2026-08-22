@@ -66,8 +66,7 @@ export const OWNER_NAV: OwnerNavItem[] = [
     label: "Payments",
     href: "/pg-owner/payments",
     icon: CreditCard,
-    description: "Payment gateway and payouts",
-    isPreview: true,
+    description: "Earnings, dues and payouts",
   },
   {
     label: "Customers",
