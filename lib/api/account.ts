@@ -1,0 +1,112 @@
+import { apiRequest } from "@/lib/api/client";
+import type { UserGender, UserRole, UserType } from "@/lib/api/auth";
+import type { PgGender, RoomType, VerificationStatus } from "@/lib/api/pg";
+
+/**
+ * The whole account, as opposed to the trimmed session user the header holds.
+ * `GET /v1/auth/me` deliberately returns less; this is what the account page
+ * needs.
+ */
+export interface AccountProfile {
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  email: string;
+  phone: string;
+  role: UserRole;
+  userType: UserType | null;
+  gender: UserGender | null;
+  /** YYYY-MM-DD, so it cannot shift across a timezone boundary. */
+  dateOfBirth: string | null;
+  profileImage: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  pincode: string | null;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+  createdAt: string;
+}
+
+/** Send only what changed; anything omitted is left alone. */
+export interface UpdateProfilePayload {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  gender?: UserGender;
+  dateOfBirth?: string;
+  userType?: UserType;
+  profileImage?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  pincode?: string;
+}
+
+export interface ProfileResponse {
+  success: true;
+  message: string;
+  data: AccountProfile;
+}
+
+export interface StayService {
+  id: string;
+  name: string;
+  monthlyAmount: number;
+}
+
+export interface StayPg {
+  id: string;
+  pgCode: string;
+  name: string;
+  location: string;
+  city: string | null;
+  logo: string | null;
+  image: string | null;
+  gender: PgGender | null;
+  foodIncluded: boolean;
+  verification: VerificationStatus;
+  ownerName: string;
+  ownerPhone: string;
+}
+
+export interface Stay {
+  residentId: string;
+  roomNumber: string | null;
+  roomType: RoomType;
+  monthlyRent: number;
+  /** Rent plus every service taken. */
+  monthlyTotal: number;
+  joinedAt: string;
+  dueDate: string | null;
+  services: StayService[];
+  pg: StayPg;
+}
+
+export interface StayResponse {
+  success: true;
+  message: string;
+  /** Null is the ordinary answer for someone still looking, not an error. */
+  data: Stay | null;
+}
+
+export function fetchProfile(): Promise<ProfileResponse> {
+  return apiRequest<ProfileResponse>("/v1/users/me");
+}
+
+export function updateProfile(
+  payload: UpdateProfilePayload
+): Promise<ProfileResponse> {
+  return apiRequest<ProfileResponse>("/v1/users/me", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+/** The PG this account currently lives in, or null. */
+export function fetchStay(): Promise<StayResponse> {
+  return apiRequest<StayResponse>("/v1/users/me/stay");
+}

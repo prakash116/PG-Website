@@ -25,6 +25,12 @@ interface AuthState {
   login: (payload: LoginPayload) => Promise<LoginResponse>;
   register: (payload: RegisterPayload) => Promise<RegisterResponse>;
   loadSession: () => Promise<void>;
+  /**
+   * Replaces the signed-in user after they edit their own account, so the
+   * header shows the new name straight away. `loadSession` cannot do this: it
+   * returns early once the session has been resolved.
+   */
+  setUser: (user: AuthenticatedUser) => void;
   logout: () => Promise<void>;
   clearError: () => void;
   resetRegistration: () => void;
@@ -127,6 +133,9 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
     return sessionRequest;
   },
+
+  setUser: (user) =>
+    set({ user, isAuthenticated: true, isSessionResolved: true }),
 
   logout: async () => {
     set({ isLoggingOut: true });

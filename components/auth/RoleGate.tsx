@@ -8,7 +8,12 @@ import { getRoleDestination } from "@/lib/auth/roles";
 import { useAuthStore } from "@/stores/auth-store";
 
 interface RoleGateProps {
-  role: UserRole;
+  /**
+   * Which roles may see this. Omit it to mean "any signed-in account", which is
+   * what the account pages want: an owner has an account too, and sending them
+   * to their dashboard for asking about their own profile would be wrong.
+   */
+  role?: UserRole | UserRole[];
   children: React.ReactNode;
 }
 
@@ -18,6 +23,11 @@ export function RoleGate({ role, children }: RoleGateProps) {
   const loadSession = useAuthStore((state) => state.loadSession);
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  // A string, not an array: an inline `role={["A", "B"]}` prop is a new array
+  // on every render and would re-run the effect below forever.
+  const allowed = role === undefined ? "" : [role].flat().join(",");
+  const isAllowed = user !== null && (allowed === "" || allowed.split(",").includes(user.role));
 
   useEffect(() => {
     void loadSession();
@@ -31,12 +41,12 @@ export function RoleGate({ role, children }: RoleGateProps) {
       return;
     }
 
-    if (user.role !== role) {
+    if (allowed !== "" && !allowed.split(",").includes(user.role)) {
       router.replace(getRoleDestination(user.role));
     }
-  }, [isSessionResolved, isAuthenticated, role, router, user]);
+  }, [allowed, isSessionResolved, isAuthenticated, router, user]);
 
-  if (!isSessionResolved || !isAuthenticated || !user || user.role !== role) {
+  if (!isSessionResolved || !isAuthenticated || !user || !isAllowed) {
     return (
       <div className="flex min-h-[70svh] items-center justify-center pt-24">
         <LoaderCircle className="size-8 animate-spin text-brand-ink" />

@@ -9,6 +9,7 @@ import { ArrowRight, LoaderCircle, LogOut, UserRound } from "lucide-react";
 import { Logo } from "@/components/common/Logo";
 import { ProfileMenu } from "@/components/layout/ProfileMenu";
 import { Button } from "@/components/ui/button";
+import { getAccountMenu } from "@/lib/auth/account-menu";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -241,11 +242,44 @@ export function Header() {
                           </p>
                         </div>
                       </div>
+
+                      {/* The same items as the desktop dropdown, from the same
+                          definition, so the two cannot say different things. */}
+                      {getAccountMenu(user.role).map((item) =>
+                        item.href ? (
+                          <Button
+                            key={item.label}
+                            variant="outline"
+                            render={<Link href={item.href} />}
+                            onClick={() => setOpen(false)}
+                            className="h-12 justify-start gap-3 rounded-full px-5 text-base font-semibold"
+                          >
+                            <item.icon className="size-4.5 text-muted-foreground" />
+                            {item.label}
+                          </Button>
+                        ) : (
+                          <Button
+                            key={item.label}
+                            variant="outline"
+                            disabled
+                            className="h-12 justify-start gap-3 rounded-full px-5 text-base font-semibold"
+                          >
+                            <item.icon className="size-4.5 text-muted-foreground" />
+                            {item.label}
+                            {item.soon && (
+                              <span className="ml-auto rounded-full bg-secondary px-2 py-0.5 text-[0.625rem] font-semibold tracking-wide text-secondary-foreground uppercase">
+                                Soon
+                              </span>
+                            )}
+                          </Button>
+                        )
+                      )}
+
                       <Button
                         variant="outline"
                         disabled={isLoggingOut}
                         onClick={() => void handleMobileLogout()}
-                        className="h-12 gap-2 rounded-full text-base font-semibold"
+                        className="h-12 gap-2 rounded-full text-base font-semibold text-destructive"
                       >
                         {isLoggingOut ? (
                           <LoaderCircle className="size-4.5 animate-spin" />
