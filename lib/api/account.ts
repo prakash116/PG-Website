@@ -110,3 +110,32 @@ export function updateProfile(
 export function fetchStay(): Promise<StayResponse> {
   return apiRequest<StayResponse>("/v1/users/me/stay");
 }
+
+/** An account that has been closed, and the date it stops being recoverable. */
+export interface ClosedAccount {
+  id: string;
+  name: string;
+  email: string;
+  deletedAt: string | null;
+  purgeOn: string | null;
+  graceDays: number;
+}
+
+export interface CloseAccountResponse {
+  success: true;
+  message: string;
+  data: ClosedAccount;
+}
+
+/**
+ * Closes the signed-in account. The session cookie is cleared by the API, so
+ * the caller should clear its own state and send them to the homepage.
+ *
+ * A PG owner is refused with a 409 explaining why — removing the owner would
+ * take the PG and its payment history with it.
+ */
+export function deleteOwnAccount(): Promise<CloseAccountResponse> {
+  return apiRequest<CloseAccountResponse>("/v1/users/me", {
+    method: "DELETE",
+  });
+}

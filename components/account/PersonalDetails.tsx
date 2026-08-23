@@ -11,6 +11,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { UserAvatar } from "@/components/common/UserAvatar";
+import { DeleteAccountDialog } from "@/components/account/DeleteAccountDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -167,6 +168,7 @@ export function PersonalDetails() {
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -559,6 +561,44 @@ export function PersonalDetails() {
             </div>
           </div>
         </div>
+
+        {/* Deleting is separated from saving, and styled so it can never be
+            mistaken for one of the form's own actions. */}
+        <div className="mt-5 rounded-3xl border border-destructive/25 bg-destructive/[0.03] p-6 sm:p-7">
+          <h2 className="font-display text-lg font-bold text-foreground">
+            Delete account
+          </h2>
+
+          {profile.role === "USER" ? (
+            <>
+              <p className="mt-1.5 max-w-xl text-sm text-muted-foreground">
+                Signs you out and closes your account. We hold it for 30 days in
+                case you change your mind, then delete it for good.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsDeleteOpen(true)}
+                className="mt-5 h-11 gap-2 rounded-full border-destructive/40 bg-card font-semibold text-destructive hover:bg-destructive/5 hover:text-destructive"
+              >
+                <Trash2 className="size-4" />
+                Delete account
+              </Button>
+            </>
+          ) : (
+            <p className="mt-1.5 max-w-xl text-sm text-muted-foreground">
+              A PG owner account cannot be deleted here — removing it would take
+              the PG with it, along with its rooms, residents and payment
+              history. Remove the PG first, or ask an administrator.
+            </p>
+          )}
+        </div>
+
+        <DeleteAccountDialog
+          open={isDeleteOpen}
+          onOpenChange={setIsDeleteOpen}
+          email={profile.email}
+        />
 
         {error && (
           <p className="mt-4 text-sm font-medium text-destructive">{error}</p>
