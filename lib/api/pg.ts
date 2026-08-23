@@ -86,6 +86,8 @@ export interface UpdatePgPayload {
 
 export interface RoomTypeInput {
   type: RoomType;
+  /** How many rooms of this type. Required: the API rejects the payload without it. */
+  roomCount: number;
   pricePerBed: number;
   roomImage1: string;
   roomImage2: string;

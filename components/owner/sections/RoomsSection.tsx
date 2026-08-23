@@ -131,7 +131,7 @@ function RoomsForm({ pg }: { pg: PgDetail }) {
         return;
       }
 
-      payload.push({ type, pricePerBed, ...row.images });
+      payload.push({ type, roomCount, pricePerBed, ...row.images });
     }
 
     try {
