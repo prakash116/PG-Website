@@ -41,7 +41,7 @@ export function AccountShell({
     <RoleGate>
       <section className="container-page pt-28 pb-20 sm:pt-32">
         <header className="max-w-2xl">
-          <p className="text-xs font-semibold tracking-[0.18em] text-brand-orange uppercase">
+          <p className="text-xs font-semibold tracking-[0.18em] text-brand-ink uppercase">
             Your account
           </p>
           <h1 className="mt-2 font-display text-3xl font-bold text-foreground sm:text-4xl">
@@ -68,7 +68,7 @@ export function AccountShell({
                   className={cn(
                     "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors",
                     active
-                      ? "bg-brand-orange text-white"
+                      ? "bg-primary text-primary-foreground shadow-[0_8px_20px_rgb(38_22_10/0.12)]"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >

@@ -166,7 +166,7 @@ export function MyStay() {
 
           <div className="flex flex-wrap items-center gap-2">
             {pg.verification === "VERIFIED" && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-3 py-1.5 text-xs font-semibold text-success">
                 <ShieldCheck className="size-3.5" />
                 Verified
               </span>
@@ -229,7 +229,7 @@ export function MyStay() {
 
             <div className="flex items-center justify-between gap-4 border-t pt-3">
               <dt className="font-semibold text-foreground">Every month</dt>
-              <dd className="font-display text-xl font-bold text-brand-orange">
+              <dd className="font-display text-xl font-bold text-brand-ink">
                 {rupees.format(stay.monthlyTotal)}
               </dd>
             </div>

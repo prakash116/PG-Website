@@ -3,6 +3,7 @@
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { LoaderCircle, LogOut, UserRound } from "lucide-react";
+import { UserAvatar } from "@/components/common/UserAvatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -43,25 +44,38 @@ export function ProfileMenu({ transparent }: ProfileMenuProps) {
             variant="outline"
             aria-label={`Account menu for ${fullName}`}
             className={cn(
-              "size-10 rounded-full p-0",
+              "size-10 overflow-hidden rounded-full p-0",
               transparent &&
                 "border-white/35 bg-white/10 text-white hover:bg-white/20 hover:text-white"
             )}
           >
-            <UserRound className="size-4.5" />
+            {user.profileImage ? (
+              <UserAvatar
+                src={user.profileImage}
+                name={fullName}
+                className="size-full"
+              />
+            ) : (
+              <UserRound className="size-4.5" />
+            )}
           </Button>
         }
       />
       <DropdownMenuContent
         align="end"
         sideOffset={10}
-        className="w-60 min-w-60 p-1.5"
+        className="w-64 min-w-64 p-1.5"
       >
-        <div className="px-2 py-1.5">
-          <p className="truncate text-sm font-semibold text-foreground">
-            {fullName}
-          </p>
-          <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+        <div className="flex items-center gap-3 px-2 py-2">
+          <UserAvatar src={user.profileImage} name={fullName} />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-foreground">
+              {fullName}
+            </p>
+            <p className="truncate text-xs text-muted-foreground">
+              {user.email}
+            </p>
+          </div>
         </div>
         <DropdownMenuSeparator />
 

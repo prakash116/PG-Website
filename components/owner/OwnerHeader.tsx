@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ExternalLink, Menu } from "lucide-react";
+import { UserAvatar } from "@/components/common/UserAvatar";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -11,41 +12,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { OwnerSidebar } from "./OwnerSidebar";
-
-function initialsOf(firstName: string, lastName: string | null): string {
-  return `${firstName.charAt(0)}${lastName?.charAt(0) ?? ""}`.toUpperCase();
-}
-
-/** Profile photo, falling back to initials so the header never looks broken. */
-function OwnerAvatar({
-  src,
-  initials,
-  className,
-}: {
-  src: string | null;
-  initials: string;
-  className?: string;
-}) {
-  return (
-    <span
-      className={cn(
-        "flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent font-display text-sm font-extrabold text-accent-foreground",
-        className
-      )}
-    >
-      {src ? (
-        // Remote Cloudinary URL, so a plain img avoids next/image host config.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt="" className="size-full object-cover" />
-      ) : (
-        initials || "PG"
-      )}
-    </span>
-  );
-}
 
 export function OwnerHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -86,10 +54,7 @@ export function OwnerHeader() {
 
         {/* Left: who is signed in */}
         <div className="flex min-w-0 items-center gap-3">
-          <OwnerAvatar
-            src={user?.profileImage ?? null}
-            initials={user ? initialsOf(user.firstName, user.lastName) : ""}
-          />
+          <UserAvatar src={user?.profileImage ?? null} name={fullName} />
           <div className="min-w-0">
             <p className="truncate text-sm font-bold text-foreground">
               {fullName}

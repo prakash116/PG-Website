@@ -5,8 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import toast from "react-hot-toast";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, LoaderCircle, LogOut, UserRound } from "lucide-react";
+import { ArrowRight, LoaderCircle, LogOut } from "lucide-react";
 import { Logo } from "@/components/common/Logo";
+import { UserAvatar } from "@/components/common/UserAvatar";
 import { ProfileMenu } from "@/components/layout/ProfileMenu";
 import { Button } from "@/components/ui/button";
 import { getAccountMenu } from "@/lib/auth/account-menu";
@@ -228,9 +229,13 @@ export function Header() {
                   (isAuthenticated && user ? (
                     <>
                       <div className="flex items-center gap-3 rounded-2xl border bg-card px-4 py-3">
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-                          <UserRound className="size-5" />
-                        </span>
+                        <UserAvatar
+                          src={user.profileImage}
+                          name={[user.firstName, user.lastName]
+                            .filter(Boolean)
+                            .join(" ")}
+                          className="size-11"
+                        />
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold text-foreground">
                             {[user.firstName, user.lastName]
