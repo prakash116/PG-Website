@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
-import { AdminPreview } from "@/components/admin/AdminPreview";
+import { PageHeader } from "@/components/owner/PageHeader";
+import { PgDetailsTable } from "@/components/admin/PgDetailsTable";
 
 export const metadata: Metadata = { title: "PG Details" };
 
 export default function AdminPgDetailsPage() {
   return (
-    <AdminPreview
-      icon="pg"
-      title="PG Details"
-      description="Every listing on the platform."
-      planned={[
-        "Every PG with its owner, city and room count",
-        "Published or private, and who verified it",
-        "Open one listing to see and edit its details",
-      ]}
-      needs="An admin listing endpoint. The owner-facing one only ever returns your own PG."
-    />
+    <>
+      <PageHeader
+        title="PG Details"
+        description="Every listing on Pzee. Open one to see its rooms, guests and revenue."
+      />
+      <PgDetailsTable />
+    </>
   );
 }

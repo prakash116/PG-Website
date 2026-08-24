@@ -38,7 +38,6 @@ export const ADMIN_NAV: OwnerNavItem[] = [
     href: "/admin/pg-details",
     icon: Building2,
     description: "Every listing on Pzee",
-    isPreview: true,
   },
   {
     label: "Customers",
