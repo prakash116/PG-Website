@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { ApiError } from "@/lib/api/client";
+import { clearResourceCache } from "@/stores/resource-cache";
 import {
   fetchSession,
   loginUser,
@@ -54,6 +55,11 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
     try {
       const response = await loginUser(payload);
+
+      // Signing in as somebody else must not inherit whatever the last account
+      // left cached in this browser.
+      clearResourceCache();
+
       set({
         isLoggingIn: false,
         user: response.data.user,
@@ -77,6 +83,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
     try {
       const registration = await registerUser(payload);
+
+      // A brand new account starts with nothing cached against it.
+      clearResourceCache();
+
       const registered = registration.data;
 
       // The API issues the session cookie on register, so the new account is
@@ -145,6 +155,9 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     } catch {
       // The cookie may already be gone; sign out locally either way.
     }
+
+    // Everything cached belonged to the account that just left.
+    clearResourceCache();
 
     set({
       isLoggingOut: false,

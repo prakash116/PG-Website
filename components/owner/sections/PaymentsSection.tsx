@@ -92,7 +92,7 @@ export function PaymentsSection() {
   }
 
   if (hasNoPg) return <NoPgState />;
-  if (error && !summary) return <PgErrorState message={error} onRetry={load} />;
+  if (error && !summary) return <PgErrorState message={error} onRetry={() => void load(true)} />;
   if (!summary) return null;
 
   const peak = Math.max(...summary.monthly.map((entry) => entry.collected), 1);

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { isFresh, markLoaded } from "@/stores/resource-cache";
 import { ApiError } from "@/lib/api/client";
 import { fetchPaymentsSummary, type PaymentsSummary } from "@/lib/api/payments";
 
@@ -11,7 +12,7 @@ interface PaymentsState {
   /** True when the owner has no PG, which needs its own empty state. */
   hasNoPg: boolean;
   error: string | null;
-  load: () => Promise<void>;
+  load: (force?: boolean) => Promise<void>;
   setPeriod: (period: EarningsPeriod) => Promise<void>;
 }
 
@@ -45,15 +46,22 @@ export const usePaymentsStore = create<PaymentsState>()((set, get) => ({
   hasNoPg: false,
   error: null,
 
-  load: async () => {
+  load: async (force = false) => {
+    if (get().isLoading) return;
+    // Already loaded and still fresh: a route change should not refetch it.
+    // Mutations below pass force, because they must see their own write.
+    if (!force && isFresh("payments")) return;
+
     set({ isLoading: true, error: null });
 
     try {
       const summary = await fetchPaymentsSummary(rangeFor(get().period));
       set({ summary, isLoading: false, hasNoPg: false });
+      markLoaded("payments");
     } catch (error: unknown) {
       if (error instanceof ApiError && error.status === 404) {
         set({ isLoading: false, hasNoPg: true });
+        markLoaded("payments");
         return;
       }
 
@@ -69,6 +77,6 @@ export const usePaymentsStore = create<PaymentsState>()((set, get) => ({
 
   setPeriod: async (period) => {
     set({ period });
-    await get().load();
+    await get().load(true);
   },
 }));

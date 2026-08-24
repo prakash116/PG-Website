@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import {
   BadgeCheck,
@@ -29,6 +29,7 @@ import {
   type AccountProfile,
   type UpdateProfilePayload,
 } from "@/lib/api/account";
+import { useCachedResource } from "@/stores/resource-cache";
 import { uploadProfileImage, type UserGender, type UserRole, type UserType } from "@/lib/api/auth";
 import { GUEST_GENDER_LABELS, USER_TYPE_LABELS } from "@/lib/api/crm";
 import { useAuthStore } from "@/stores/auth-store";
@@ -163,44 +164,40 @@ export function PersonalDetails() {
   const setUser = useAuthStore((state) => state.setUser);
   const sessionUser = useAuthStore((state) => state.user);
 
-  const [profile, setProfile] = useState<AccountProfile | null>(null);
   const [form, setForm] = useState<FormState | null>(null);
+  /**
+   * What the form looked like when it was last in step with the server. Held
+   * locally rather than derived from the cached profile so that a background
+   * revalidation cannot move the goalposts halfway through an edit.
+   */
+  const [saved, setSaved] = useState<FormState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    let active = true;
+  const {
+    data: profile,
+    error: loadError,
+    set: setProfile,
+  } = useCachedResource(
+    "me/profile",
+    async () => (await fetchProfile()).data,
+  );
 
-    void (async () => {
-      try {
-        const response = await fetchProfile();
-        if (!active) return;
-
-        setProfile(response.data);
-        setForm(toForm(response.data));
-      } catch (caught) {
-        if (!active) return;
-        setError(
-          caught instanceof ApiError
-            ? caught.message
-            : "Could not load your details. Try again."
-        );
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, []);
+  // Seeded once, when the profile first arrives. Re-seeding on every change
+  // would throw away whatever the person was in the middle of typing the
+  // moment the cache revalidated behind them.
+  if (profile && form === null) {
+    setForm(toForm(profile));
+    setSaved(toForm(profile));
+  }
 
   function set(field: EditableField, value: string) {
     setForm((current) => (current ? { ...current, [field]: value } : current));
   }
 
-  const saved = profile ? toForm(profile) : null;
   const changes = form && saved ? changedFields(form, saved) : {};
   const isDirty = Object.keys(changes).length > 0;
 
@@ -255,6 +252,7 @@ export function PersonalDetails() {
 
       setProfile(next);
       setForm(toForm(next));
+      setSaved(toForm(next));
 
       // Keep the header in step with the name and photo just changed.
       setUser({
@@ -283,15 +281,15 @@ export function PersonalDetails() {
     }
   }
 
-  if (error && !form) {
+  if (loadError && !form) {
     return (
       <div className="rounded-3xl border border-destructive/30 bg-destructive/5 p-8 text-center">
-        <p className="text-sm font-medium text-destructive">{error}</p>
+        <p className="text-sm font-medium text-destructive">{loadError}</p>
       </div>
     );
   }
 
-  if (!form || !profile) {
+  if (!form || !saved || !profile) {
     return (
       <div className="flex min-h-72 items-center justify-center">
         <LoaderCircle className="size-7 animate-spin text-brand-ink" />

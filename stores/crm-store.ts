@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { isFresh, markLoaded } from "@/stores/resource-cache";
 import { ApiError } from "@/lib/api/client";
 import {
   checkoutResident,
@@ -30,7 +31,7 @@ interface CrmState {
   /** True when the owner has no PG, which needs its own empty state. */
   hasNoPg: boolean;
   error: string | null;
-  load: () => Promise<void>;
+  load: (force?: boolean) => Promise<void>;
   setStatus: (status: ResidentStatus) => Promise<void>;
   setSearch: (search: string) => Promise<void>;
   setPeriod: (period: CrmPeriod) => Promise<void>;
@@ -78,7 +79,12 @@ export const useCrmStore = create<CrmState>()((set, get) => ({
   hasNoPg: false,
   error: null,
 
-  load: async () => {
+  load: async (force = false) => {
+    if (get().isLoading) return;
+    // Already loaded and still fresh: a route change should not refetch it.
+    // Mutations below pass force, because they must see their own write.
+    if (!force && isFresh("crm")) return;
+
     set({ isLoading: true, error: null });
 
     try {
@@ -89,10 +95,12 @@ export const useCrmStore = create<CrmState>()((set, get) => ({
       ]);
 
       set({ residents, summary, isLoading: false, hasNoPg: false });
+      markLoaded("crm");
     } catch (error: unknown) {
       // A 404 means no PG is linked yet, which is a state rather than a failure.
       if (error instanceof ApiError && error.status === 404) {
         set({ isLoading: false, hasNoPg: true });
+        markLoaded("crm");
         return;
       }
 
@@ -105,17 +113,17 @@ export const useCrmStore = create<CrmState>()((set, get) => ({
 
   setStatus: async (status) => {
     set({ status });
-    await get().load();
+    await get().load(true);
   },
 
   setSearch: async (search) => {
     set({ search });
-    await get().load();
+    await get().load(true);
   },
 
   setPeriod: async (period) => {
     set({ period });
-    await get().load();
+    await get().load(true);
   },
 
   addGuest: async (payload) => {
@@ -156,7 +164,7 @@ async function run(
   try {
     await action();
     set({ isSaving: false });
-    await get().load();
+    await get().load(true);
   } catch (error: unknown) {
     const message = messageFor(error, fallback);
     set({ isSaving: false, error: message });

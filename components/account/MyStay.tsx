@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   BedDouble,
@@ -14,8 +13,8 @@ import {
   Utensils,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ApiError } from "@/lib/api/client";
-import { fetchStay, type Stay } from "@/lib/api/account";
+import { fetchStay } from "@/lib/api/account";
+import { useCachedResource } from "@/stores/resource-cache";
 import { PG_GENDER_LABELS, ROOM_TYPE_LABELS } from "@/lib/api/pg";
 
 const rupees = new Intl.NumberFormat("en-IN", {
@@ -56,34 +55,13 @@ function Fact({
 }
 
 export function MyStay() {
-  const [stay, setStay] = useState<Stay | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let active = true;
-
-    void (async () => {
-      try {
-        const response = await fetchStay();
-        if (active) setStay(response.data);
-      } catch (caught) {
-        if (active) {
-          setError(
-            caught instanceof ApiError
-              ? caught.message
-              : "Could not load your stay. Please try again."
-          );
-        }
-      } finally {
-        if (active) setIsLoading(false);
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, []);
+  // Cached, so coming back to this page shows the room straight away instead
+  // of a spinner and another request.
+  const {
+    data: stay,
+    isLoading,
+    error,
+  } = useCachedResource("me/stay", async () => (await fetchStay()).data);
 
   if (isLoading) {
     return (

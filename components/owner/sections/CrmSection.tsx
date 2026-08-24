@@ -245,7 +245,7 @@ export function CrmSection() {
   }
 
   if (hasNoPg) return <NoPgState />;
-  if (error && !summary) return <PgErrorState message={error} onRetry={load} />;
+  if (error && !summary) return <PgErrorState message={error} onRetry={() => void load(true)} />;
   if (!summary) return null;
 
   const roomTypeOptions = summary.occupancy.map((room) => ({

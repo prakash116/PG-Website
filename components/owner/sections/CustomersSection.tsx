@@ -87,7 +87,7 @@ export function CustomersSection() {
   }
 
   if (hasNoPg) return <NoPgState />;
-  if (error) return <PgErrorState message={error} onRetry={load} />;
+  if (error) return <PgErrorState message={error} onRetry={() => void load(true)} />;
 
   const newCount = visits.filter((visit) => visit.status === "PENDING").length;
 

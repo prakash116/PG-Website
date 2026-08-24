@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import {
   LoaderCircle,
@@ -28,6 +28,7 @@ import {
   restoreUserAccount,
   type AdminUser,
 } from "@/lib/api/users";
+import { useCachedResource } from "@/stores/resource-cache";
 import type { UserRole } from "@/lib/api/auth";
 
 const ROLE_LABELS: Record<UserRole, string> = {
@@ -49,34 +50,17 @@ function formatDate(iso: string): string {
 }
 
 export function UsersTable() {
-  const [users, setUsers] = useState<AdminUser[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   /** The id currently being closed or restored, so only its row shows a spinner. */
   const [busyId, setBusyId] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<AdminUser | null>(null);
 
-  useEffect(() => {
-    let active = true;
-
-    void (async () => {
-      try {
-        const response = await fetchUsers();
-        if (active) setUsers(response.data);
-      } catch (caught) {
-        if (!active) return;
-        setError(
-          caught instanceof ApiError
-            ? caught.message
-            : "Could not load accounts. Try again."
-        );
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, []);
+  // Cached, so the list is there the moment the admin page opens again.
+  const {
+    data: users,
+    error,
+    set: setUsers,
+  } = useCachedResource("admin/users", async () => (await fetchUsers()).data);
 
   async function act(
     user: AdminUser,

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { isFresh, markLoaded } from "@/stores/resource-cache";
 import { ApiError } from "@/lib/api/client";
 import {
   fetchOwnerVisits,
@@ -18,7 +19,7 @@ interface VisitsState {
   /** True when the owner has no PG, which needs its own empty state. */
   hasNoPg: boolean;
   error: string | null;
-  load: () => Promise<void>;
+  load: (force?: boolean) => Promise<void>;
   setFilter: (filter: VisitFilter) => Promise<void>;
   setStatus: (id: string, status: VisitStatus) => Promise<void>;
 }
@@ -31,7 +32,12 @@ export const useVisitsStore = create<VisitsState>()((set, get) => ({
   hasNoPg: false,
   error: null,
 
-  load: async () => {
+  load: async (force = false) => {
+    if (get().isLoading) return;
+    // Already loaded and still fresh: a route change should not refetch it.
+    // Mutations below pass force, because they must see their own write.
+    if (!force && isFresh("visits")) return;
+
     set({ isLoading: true, error: null });
 
     try {
@@ -41,10 +47,12 @@ export const useVisitsStore = create<VisitsState>()((set, get) => ({
       );
 
       set({ visits, isLoading: false, hasNoPg: false });
+      markLoaded("visits");
     } catch (error: unknown) {
       // A 404 means no PG is linked yet, which is a state rather than a failure.
       if (error instanceof ApiError && error.status === 404) {
         set({ isLoading: false, hasNoPg: true });
+        markLoaded("visits");
         return;
       }
 
@@ -60,7 +68,7 @@ export const useVisitsStore = create<VisitsState>()((set, get) => ({
 
   setFilter: async (filter) => {
     set({ filter });
-    await get().load();
+    await get().load(true);
   },
 
   setStatus: async (id, status) => {
@@ -70,7 +78,7 @@ export const useVisitsStore = create<VisitsState>()((set, get) => ({
       await updateVisitStatus(id, status);
       set({ pendingId: null });
       // Reload, because a status change can move the row out of the filter.
-      await get().load();
+      await get().load(true);
     } catch (error: unknown) {
       const message =
         error instanceof ApiError

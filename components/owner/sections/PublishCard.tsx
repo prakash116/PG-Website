@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import {
   Check,
@@ -13,11 +13,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ApiError } from "@/lib/api/client";
-import {
-  fetchPublishStatus,
-  requestPublish,
-  type PublishStatus,
-} from "@/lib/api/publishing";
+import { fetchPublishStatus, requestPublish } from "@/lib/api/publishing";
+import { useCachedResource } from "@/stores/resource-cache";
 
 const rupees = new Intl.NumberFormat("en-IN", {
   style: "currency",
@@ -32,31 +29,17 @@ const rupees = new Intl.NumberFormat("en-IN", {
  * waiting on us to confirm your payment, or live.
  */
 export function PublishCard() {
-  const [status, setStatus] = useState<PublishStatus | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [isRequesting, setIsRequesting] = useState(false);
 
-  useEffect(() => {
-    let active = true;
-
-    void (async () => {
-      try {
-        const response = await fetchPublishStatus();
-        if (active) setStatus(response.data);
-      } catch (caught) {
-        if (!active) return;
-        setError(
-          caught instanceof ApiError
-            ? caught.message
-            : "Could not load your publish status."
-        );
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, []);
+  // Cached, so switching between dashboard pages does not refetch this.
+  const {
+    data: status,
+    error,
+    set: setStatus,
+  } = useCachedResource(
+    "pg/publish",
+    async () => (await fetchPublishStatus()).data,
+  );
 
   async function handlePublish() {
     setIsRequesting(true);

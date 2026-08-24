@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { BadgeIndianRupee, Check, Gift, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import {
   fetchPendingFees,
   type PendingFee,
 } from "@/lib/api/publishing";
+import { useCachedResource } from "@/stores/resource-cache";
 
 const rupees = new Intl.NumberFormat("en-IN", {
   style: "currency",
@@ -42,33 +43,19 @@ function formatDate(iso: string): string {
  * so the dialog spells out both before it happens.
  */
 export function ListingFees() {
-  const [fees, setFees] = useState<PendingFee[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<PendingFee | null>(null);
   const [reference, setReference] = useState("");
   const [isConfirming, setIsConfirming] = useState(false);
 
-  useEffect(() => {
-    let active = true;
-
-    void (async () => {
-      try {
-        const response = await fetchPendingFees();
-        if (active) setFees(response.data);
-      } catch (caught) {
-        if (!active) return;
-        setError(
-          caught instanceof ApiError
-            ? caught.message
-            : "Could not load listing fees."
-        );
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, []);
+  // Cached, so the queue is there straight away on a return visit.
+  const {
+    data: fees,
+    error,
+    set: setFees,
+  } = useCachedResource(
+    "admin/listing-fees",
+    async () => (await fetchPendingFees()).data,
+  );
 
   async function confirm() {
     if (!pending) return;

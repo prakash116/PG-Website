@@ -121,14 +121,39 @@ export interface ReferralRewardItem {
   earnedAt: string;
 }
 
+export type ReferralPayoutStatus = "REQUESTED" | "PAID" | "REJECTED";
+
+/** A credit ("EARNED") or a payout, in one shape so they share a list. */
+export interface ReferralTransaction {
+  id: string;
+  kind: "EARNED" | "PAYOUT";
+  /** Always positive; `kind` says which direction it went. */
+  amount: number;
+  status: "EARNED" | ReferralPayoutStatus;
+  label: string;
+  /** The PG code on an earning; null on a payout. */
+  reference: string | null;
+  /** Why a payout was rejected. */
+  note: string | null;
+  at: string;
+}
+
 export interface Referrals {
   /** Null for an account that is not a customer. */
   referralCode: string | null;
   earnedRupees: number;
+  /** Free to request: earnings minus anything paid out or already requested. */
+  availableRupees: number;
+  paidOutRupees: number;
+  pendingPayoutRupees: number;
   rewardPerReferral: number;
   /** PGs that used the code but have not published, so nothing is earned yet. */
   pendingReferrals: number;
+  /** True while a payout is awaiting settlement; only one may be open. */
+  hasOpenPayout: boolean;
   rewards: ReferralRewardItem[];
+  /** Earnings and payouts together, newest first. */
+  transactions: ReferralTransaction[];
 }
 
 export interface ReferralsResponse {
@@ -137,9 +162,20 @@ export interface ReferralsResponse {
   data: Referrals;
 }
 
-/** The signed-in customer's referral code and what it has earned. */
+/** The signed-in customer's referral code, balance and history. */
 export function fetchReferrals(): Promise<ReferralsResponse> {
   return apiRequest<ReferralsResponse>("/v1/users/me/referrals");
+}
+
+/**
+ * Asks for the whole available balance to be sent to `upiId`. Refused when
+ * there is nothing to pay out, or a request is already open.
+ */
+export function requestPayout(upiId: string): Promise<ReferralsResponse> {
+  return apiRequest<ReferralsResponse>("/v1/users/me/referrals/payout", {
+    method: "POST",
+    body: JSON.stringify({ upiId }),
+  });
 }
 
 /** An account that has been closed, and the date it stops being recoverable. */

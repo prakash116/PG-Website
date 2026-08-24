@@ -67,7 +67,7 @@ export function AnalyticsSection() {
   }
 
   if (hasNoPg) return <NoPgState />;
-  if (error && !data) return <PgErrorState message={error} onRetry={load} />;
+  if (error && !data) return <PgErrorState message={error} onRetry={() => void load(true)} />;
   if (!data) return null;
 
   const peakCollected = Math.max(

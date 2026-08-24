@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { isFresh, markLoaded } from "@/stores/resource-cache";
 import { ApiError } from "@/lib/api/client";
 import {
   fetchMyPg,
@@ -16,7 +17,7 @@ interface PgState {
   /** True when the owner has no PG yet, which needs its own empty state. */
   hasNoPg: boolean;
   error: string | null;
-  load: () => Promise<void>;
+  load: (force?: boolean) => Promise<void>;
   saveDetails: (payload: UpdatePgPayload) => Promise<void>;
   saveRooms: (rooms: RoomTypeInput[]) => Promise<void>;
   clearError: () => void;
@@ -33,17 +34,23 @@ export const usePgStore = create<PgState>()((set, get) => ({
   hasNoPg: false,
   error: null,
 
-  load: async () => {
+  load: async (force = false) => {
     if (get().isLoading) return;
+    // Already loaded and still fresh: a route change should not refetch it.
+    // Mutations below pass force, because they must see their own write.
+    if (!force && isFresh("pg")) return;
+
     set({ isLoading: true, error: null });
 
     try {
       const response = await fetchMyPg();
       set({ pg: response.data, isLoading: false, hasNoPg: false });
+      markLoaded("pg");
     } catch (error: unknown) {
       // A 404 is not a failure: the account simply has no PG linked yet.
       if (error instanceof ApiError && error.status === 404) {
         set({ isLoading: false, hasNoPg: true, pg: null });
+        markLoaded("pg");
         return;
       }
 

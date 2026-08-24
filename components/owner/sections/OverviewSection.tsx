@@ -170,7 +170,7 @@ export function OverviewSection() {
 
   if (isLoading && !pg) return <PgLoadingState />;
   if (hasNoPg) return <NoPgState />;
-  if (error && !pg) return <PgErrorState message={error} onRetry={load} />;
+  if (error && !pg) return <PgErrorState message={error} onRetry={() => void load(true)} />;
   if (!pg) return null;
 
   const { totals, completion } = pg;
