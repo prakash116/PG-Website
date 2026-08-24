@@ -80,7 +80,6 @@ export const ADMIN_NAV: OwnerNavItem[] = [
     label: "Setting",
     href: "/admin/settings",
     icon: Settings,
-    description: "Platform configuration",
-    isPreview: true,
+    description: "Email and platform configuration",
   },
 ];

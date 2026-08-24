@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
-import { AdminPreview } from "@/components/admin/AdminPreview";
+import { PageHeader } from "@/components/owner/PageHeader";
+import { MailSettingsForm } from "@/components/admin/MailSettingsForm";
+import { SmsSettingsForm } from "@/components/admin/SmsSettingsForm";
 
 export const metadata: Metadata = { title: "Setting" };
 
 export default function AdminSettingsPage() {
   return (
-    <AdminPreview
-      icon="settings"
-      title="Setting"
-      description="Platform configuration."
-      planned={[
-        "The listing fee and referral reward amounts",
-        "The UPI id owners pay into",
-        "Which admins can confirm payments",
-      ]}
-      needs="Admin endpoints for values that live in the API environment today."
-    />
+    <>
+      <PageHeader
+        title="Setting"
+        description="The email and SMS accounts Pzee sends verification codes from."
+      />
+      <div className="grid gap-8">
+        <MailSettingsForm />
+        <SmsSettingsForm />
+      </div>
+    </>
   );
 }

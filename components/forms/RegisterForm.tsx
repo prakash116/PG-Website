@@ -21,6 +21,8 @@ import {
   UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EmailVerifyField } from "@/components/forms/EmailVerifyField";
+import { PhoneVerifyField } from "@/components/forms/PhoneVerifyField";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -39,6 +41,8 @@ import {
   type UserGender,
   type UserType,
 } from "@/lib/api/auth";
+import { fetchVerificationPolicy } from "@/lib/api/email";
+import { fetchWidgetConfig, type WidgetConfig } from "@/lib/api/phone";
 import { getRoleDestination } from "@/lib/auth/roles";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -255,6 +259,31 @@ export function RegisterForm() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [copied, setCopied] = useState(false);
+  /**
+   * Whether the address has been proven by a code we sent to it. The API
+   * checks this again on its own side — this only decides what the form lets
+   * you do.
+   */
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  /**
+   * Whether a Super Admin currently demands that proof. Starts at true — the
+   * API's own default — so a form that has not heard back yet, or cannot
+   * reach the setting at all, asks for a code rather than letting someone
+   * through to a rejection.
+   */
+  const [requireEmailVerification, setRequireEmailVerification] =
+    useState(true);
+  /** Whether the number has been proven through the MSG91 widget. */
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  /**
+   * Phone starts at false — the opposite default to email, because phone
+   * verification has never been enforced and a form that cannot reach the
+   * policy must not block accounts on a requirement nobody switched on.
+   */
+  const [requirePhoneVerification, setRequirePhoneVerification] =
+    useState(false);
+  /** Null while loading; "not configured" hides the Verify button entirely. */
+  const [widgetConfig, setWidgetConfig] = useState<WidgetConfig | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const isRegistering = useAuthStore((state) => state.isRegistering);
@@ -272,6 +301,31 @@ export function RegisterForm() {
       if (photoPreview) URL.revokeObjectURL(photoPreview);
     };
   }, [photoPreview]);
+
+  // Read once, on open. A failure is left alone deliberately: the strict
+  // default already in state is the safe answer, and the API decides anyway.
+  useEffect(() => {
+    let active = true;
+
+    void fetchVerificationPolicy()
+      .then((response) => {
+        if (active) {
+          setRequireEmailVerification(response.data.requireEmailVerification);
+          setRequirePhoneVerification(response.data.requirePhoneVerification);
+        }
+      })
+      .catch(() => {});
+
+    void fetchWidgetConfig()
+      .then((response) => {
+        if (active) setWidgetConfig(response.data);
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   function set(patch: Partial<RegisterFormState>) {
     setForm((previous) => ({ ...previous, ...patch }));
@@ -574,42 +628,25 @@ export function RegisterForm() {
             />
           </div>
           <div className={fieldBox}>
-            <Label htmlFor="register-email">
-              Email <Req />
-            </Label>
-            <Input
-              id="register-email"
-              type="email"
-              value={form.email}
-              onChange={(event) => set({ email: event.target.value })}
-              placeholder="you@example.com"
-              autoComplete="email"
-              className={inputStyle}
+            <EmailVerifyField
+              email={form.email}
+              onEmailChange={(email) => set({ email })}
+              isVerified={isEmailVerified}
+              onVerified={setIsEmailVerified}
+              required={requireEmailVerification}
+              name={form.fullName.trim().split(/s+/)[0] || undefined}
+              inputClassName={inputStyle}
             />
           </div>
           <div className={fieldBox}>
-            <Label htmlFor="register-phone">
-              Mobile number <Req />
-            </Label>
-            <div className="flex h-12 overflow-hidden rounded-xl border bg-card focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
-              <span className="flex items-center border-r bg-secondary px-3.5 text-sm font-semibold text-secondary-foreground">
-                +91
-              </span>
-              <Input
-                id="register-phone"
-                type="tel"
-                inputMode="numeric"
-                value={form.phone}
-                onChange={(event) =>
-                  set({
-                    phone: event.target.value.replace(/\D/g, "").slice(0, 10),
-                  })
-                }
-                placeholder="98765 43210"
-                autoComplete="tel-national"
-                className="h-full flex-1 rounded-none border-0 bg-transparent shadow-none focus-visible:border-transparent focus-visible:ring-0"
-              />
-            </div>
+            <PhoneVerifyField
+              phone={form.phone}
+              onPhoneChange={(phone) => set({ phone })}
+              isVerified={isPhoneVerified}
+              onVerified={setIsPhoneVerified}
+              required={requirePhoneVerification}
+              widgetConfig={widgetConfig}
+            />
           </div>
 
           {!isOwner && (
@@ -923,7 +960,12 @@ export function RegisterForm() {
         </p>
         <Button
           type="submit"
-          disabled={isRegistering || isUploadingPhoto}
+          disabled={
+            isRegistering ||
+            isUploadingPhoto ||
+            (requireEmailVerification && !isEmailVerified) ||
+            (requirePhoneVerification && !isPhoneVerified)
+          }
           className="h-12 w-full shrink-0 rounded-full px-8 text-[15px] font-semibold sm:w-auto"
         >
           {isRegistering ? (
@@ -931,7 +973,13 @@ export function RegisterForm() {
           ) : (
             <UserPlus className="size-4" />
           )}
-          {isRegistering ? "Creating account..." : "Create account"}
+          {isRegistering
+            ? "Creating account..."
+            : requireEmailVerification && !isEmailVerified
+              ? "Verify your email first"
+              : requirePhoneVerification && !isPhoneVerified
+                ? "Verify your number first"
+                : "Create account"}
         </Button>
       </div>
 
