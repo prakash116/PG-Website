@@ -14,8 +14,24 @@ import {
 } from "@/components/ui/sheet";
 import { useAuthStore } from "@/stores/auth-store";
 import { OwnerSidebar } from "./OwnerSidebar";
+import type { OwnerNavItem } from "./owner-nav";
 
-export function OwnerHeader() {
+interface OwnerHeaderProps {
+  /** Shown under the name. Defaults to the PG owner's label. */
+  subtitle?: string;
+  /** Drawer heading on mobile. */
+  drawerTitle?: string;
+  drawerDescription?: string;
+  /** Sidebar contents, for a dashboard that is not the owner's. */
+  nav?: OwnerNavItem[];
+}
+
+export function OwnerHeader({
+  subtitle = "PG Owner account",
+  drawerTitle = "PG Owner",
+  drawerDescription = "Manage your property",
+  nav,
+}: OwnerHeaderProps = {}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const user = useAuthStore((state) => state.user);
 
@@ -42,13 +58,13 @@ export function OwnerHeader() {
           <SheetContent side="left" className="w-72 p-0">
             <SheetHeader className="border-b p-4">
               <SheetTitle className="font-display text-base font-bold">
-                PG Owner
+                {drawerTitle}
               </SheetTitle>
               <SheetDescription className="text-xs">
-                Manage your property
+                {drawerDescription}
               </SheetDescription>
             </SheetHeader>
-            <OwnerSidebar onNavigate={() => setMenuOpen(false)} />
+            <OwnerSidebar nav={nav} onNavigate={() => setMenuOpen(false)} />
           </SheetContent>
         </Sheet>
 
@@ -60,7 +76,7 @@ export function OwnerHeader() {
               {fullName}
             </p>
             <p className="truncate text-xs text-muted-foreground">
-              PG Owner account
+              {subtitle}
             </p>
           </div>
         </div>

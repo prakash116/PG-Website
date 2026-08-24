@@ -11,6 +11,8 @@ import { OWNER_NAV, type OwnerNavItem } from "./owner-nav";
 interface OwnerSidebarProps {
   /** Closes the mobile drawer after a link is followed. */
   onNavigate?: () => void;
+  /** Defaults to the PG owner's nav, so existing callers need no change. */
+  nav?: OwnerNavItem[];
 }
 
 const linkBase =
@@ -107,7 +109,7 @@ function NavGroup({
   );
 }
 
-export function OwnerSidebar({ onNavigate }: OwnerSidebarProps) {
+export function OwnerSidebar({ onNavigate, nav = OWNER_NAV }: OwnerSidebarProps) {
   const pathname = usePathname();
   const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
   const logout = useAuthStore((state) => state.logout);
@@ -122,7 +124,7 @@ export function OwnerSidebar({ onNavigate }: OwnerSidebarProps) {
   return (
     <div className="flex h-full flex-col gap-1 p-3">
       <nav className="flex-1 space-y-1">
-        {OWNER_NAV.map((item) => {
+        {nav.map((item) => {
           if (item.children?.length) {
             return (
               <NavGroup

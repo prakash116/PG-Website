@@ -44,3 +44,32 @@ than rewriting a working component, and when you change shared code, check every
 place that uses it — `grep` the name across `app/`, `components/`, `lib/` and
 `stores/`. If you cannot preserve an existing behaviour, say so and explain the
 trade-off; never decide it silently.
+
+This covers **functions, components, stores, API types, database models and
+migrations alike**. A model is the hardest of these to undo: never remove or
+retype a Prisma field to make something else fit, and never write a migration
+that drops or rewrites existing rows. Add a nullable column and backfill it.
+
+**Widen with optional parameters that default to today's behaviour.** When a
+component needs to serve a second case, give it a prop with the current value as
+its default, so every existing call site keeps working untouched and unedited.
+`OwnerShell` serves the Super Admin dashboard this way: `role`, `nav` and
+`subtitle` are optional and default to the PG owner's, so the owner layout did
+not change at all.
+
+## Reuse what is already built
+
+Before writing a new component, look for one that already does the job. The
+pieces most worth reaching for:
+
+- `components/owner/OwnerShell` — header, sidebar and role gate for any
+  dashboard, owner or admin
+- `components/owner/PageHeader` — the title block on every dashboard screen
+- `components/owner/PreviewSection` — an honest "designed, not connected yet"
+  panel, instead of inventing figures
+- `components/common/UserAvatar` — a person's photo, or their initials
+- `components/auth/RoleGate` — signed-in and role checks
+- `stores/resource-cache` — `useCachedResource`, so data survives navigation
+
+A second copy of any of these will drift from the first. If the existing one
+almost fits, add a prop to it rather than forking it.
