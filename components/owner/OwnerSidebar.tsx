@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, LoaderCircle, LogOut } from "lucide-react";
+import { activeHrefFor, normalizePath } from "@/lib/nav-active";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { OWNER_NAV, type OwnerNavItem } from "./owner-nav";
@@ -41,19 +42,20 @@ function SoonBadge({ isActive }: { isActive: boolean }) {
 /** A nav entry with sub-pages, e.g. CRM → Total guests · Services. */
 function NavGroup({
   item,
-  pathname,
+  activeHref,
   onNavigate,
 }: {
   item: OwnerNavItem;
-  pathname: string;
+  activeHref: string | null;
   onNavigate?: () => void;
 }) {
   const children = item.children ?? [];
 
-  // A child route is matched exactly, since the parent href is also a child.
-  const activeChild = children.find((child) => pathname === child.href);
+  // The parent href is also one of the children, so whichever won the match
+  // above is the one to highlight.
+  const activeChild = children.find((child) => child.href === activeHref);
   const isInSection =
-    pathname === item.href || pathname.startsWith(`${item.href}/`);
+    item.href === activeHref || activeChild !== undefined;
 
   // Opens itself when you are inside it, and stays where you put it after that.
   const [isOpen, setIsOpen] = useState(isInSection);
@@ -83,7 +85,7 @@ function NavGroup({
       {isOpen && (
         <ul className="mt-1 space-y-1 border-l pl-3 ml-5">
           {children.map((child) => {
-            const isActive = pathname === child.href;
+            const isActive = child.href === activeHref;
 
             return (
               <li key={child.href}>
@@ -110,7 +112,8 @@ function NavGroup({
 }
 
 export function OwnerSidebar({ onNavigate, nav = OWNER_NAV }: OwnerSidebarProps) {
-  const pathname = usePathname();
+  const pathname = normalizePath(usePathname());
+  const activeHref = activeHrefFor(nav, pathname);
   const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
   const logout = useAuthStore((state) => state.logout);
 
@@ -130,15 +133,13 @@ export function OwnerSidebar({ onNavigate, nav = OWNER_NAV }: OwnerSidebarProps)
               <NavGroup
                 key={item.href}
                 item={item}
-                pathname={pathname}
+                activeHref={activeHref}
                 onNavigate={onNavigate}
               />
             );
           }
 
-          // Trailing slashes are on, so compare on the leading segment.
-          const isActive =
-            pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const isActive = item.href === activeHref;
 
           return (
             <Link
