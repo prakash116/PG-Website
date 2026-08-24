@@ -11,6 +11,7 @@ import {
   Copy,
   Eye,
   EyeOff,
+  Gift,
   ImagePlus,
   LoaderCircle,
   Lock,
@@ -56,6 +57,7 @@ interface RegisterFormState {
   // "List a PG" only
   pgName: string;
   pgLocation: string;
+  referralCode: string;
 }
 
 const INITIAL_FORM: RegisterFormState = {
@@ -71,6 +73,7 @@ const INITIAL_FORM: RegisterFormState = {
   gender: "",
   pgName: "",
   pgLocation: "",
+  referralCode: "",
 };
 
 const ROLE_OPTIONS: Array<{
@@ -191,6 +194,9 @@ function createPayload(
       role: "PG_OWNER",
       pgName: form.pgName.trim(),
       pgLocation: form.pgLocation.trim(),
+      ...(form.referralCode.trim() && {
+        referralCode: form.referralCode.trim().toUpperCase(),
+      }),
     };
   }
 
@@ -700,6 +706,28 @@ export function RegisterForm() {
                   className="rounded-xl bg-card pl-10"
                 />
               </div>
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="register-referral-code">Referral code</Label>
+              <div className="relative">
+                <Gift className="pointer-events-none absolute top-3.5 left-3.5 size-4 text-muted-foreground" />
+                <Input
+                  id="register-referral-code"
+                  value={form.referralCode}
+                  onChange={(event) =>
+                    set({ referralCode: event.target.value.toUpperCase() })
+                  }
+                  placeholder="PZR-4F7K2A"
+                  maxLength={20}
+                  autoCapitalize="characters"
+                  spellCheck={false}
+                  className="h-12 rounded-xl bg-card pl-10 font-mono tracking-wide"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Optional. If a Pzee resident told you about us, enter their code
+                and they earn a reward when your PG goes live.
+              </p>
             </div>
           </div>
         </section>

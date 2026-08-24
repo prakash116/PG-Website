@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { ROOM_TYPE_LABELS, type PgDetail } from "@/lib/api/pg";
 import { usePgStore } from "@/stores/pg-store";
 import { PageHeader } from "../PageHeader";
+import { PublishCard } from "./PublishCard";
 
 const rupees = (value: number) => `₹${value.toLocaleString("en-IN")}`;
 
@@ -185,6 +186,9 @@ export function OverviewSection() {
 
       <div className="grid gap-5">
         <PgIdentity pg={pg} />
+
+        {/* Whether residents can actually see this listing. */}
+        <PublishCard />
 
         {/* Completion */}
         <section className="rounded-2xl border bg-card p-6">

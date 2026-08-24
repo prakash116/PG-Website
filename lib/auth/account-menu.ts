@@ -25,7 +25,7 @@ export function getAccountMenu(role: UserRole): AccountMenuItem[] {
     return [
       { label: "Personal details", href: "/account", icon: UserRound },
       { label: "My PG", href: "/account/stay", icon: BedDouble },
-      { label: "Refer a friend", icon: Gift, soon: true },
+      { label: "Refer a friend", href: "/account/refer", icon: Gift },
     ];
   }
 

@@ -37,6 +37,12 @@ export interface OwnerRegisterPayload extends RegisterPayloadBase {
   role: "PG_OWNER";
   pgName: string;
   pgLocation: string;
+  /**
+   * Optional. The referral code of the customer who introduced this PG — they
+   * are credited once the listing is published. An unknown code is refused, so
+   * leave it out rather than guessing.
+   */
+  referralCode?: string;
 }
 
 export type RegisterPayload = SeekerRegisterPayload | OwnerRegisterPayload;

@@ -111,6 +111,37 @@ export function fetchStay(): Promise<StayResponse> {
   return apiRequest<StayResponse>("/v1/users/me/stay");
 }
 
+/** One PG that went live from this customer's code, and what it earned them. */
+export interface ReferralRewardItem {
+  id: string;
+  pgName: string;
+  pgCode: string;
+  /** Rupees. */
+  amount: number;
+  earnedAt: string;
+}
+
+export interface Referrals {
+  /** Null for an account that is not a customer. */
+  referralCode: string | null;
+  earnedRupees: number;
+  rewardPerReferral: number;
+  /** PGs that used the code but have not published, so nothing is earned yet. */
+  pendingReferrals: number;
+  rewards: ReferralRewardItem[];
+}
+
+export interface ReferralsResponse {
+  success: true;
+  message: string;
+  data: Referrals;
+}
+
+/** The signed-in customer's referral code and what it has earned. */
+export function fetchReferrals(): Promise<ReferralsResponse> {
+  return apiRequest<ReferralsResponse>("/v1/users/me/referrals");
+}
+
 /** An account that has been closed, and the date it stops being recoverable. */
 export interface ClosedAccount {
   id: string;

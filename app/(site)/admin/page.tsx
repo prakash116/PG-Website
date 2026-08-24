@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { RoleGate } from "@/components/auth/RoleGate";
+import { ListingFees } from "@/components/admin/ListingFees";
 import { UsersTable } from "@/components/admin/UsersTable";
 
 export const metadata: Metadata = {
@@ -24,7 +25,8 @@ export default function AdminPage() {
           </p>
         </header>
 
-        <div className="mt-8">
+        <div className="mt-8 grid gap-6">
+          <ListingFees />
           <UsersTable />
         </div>
       </section>
