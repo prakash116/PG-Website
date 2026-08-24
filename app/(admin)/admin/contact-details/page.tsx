@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
-import { AdminPreview } from "@/components/admin/AdminPreview";
+import { PageHeader } from "@/components/owner/PageHeader";
+import { ContactTable } from "@/components/admin/ContactTable";
 
 export const metadata: Metadata = { title: "Contact Details" };
 
 export default function AdminContactDetailsPage() {
   return (
-    <AdminPreview
-      icon="contact"
-      title="Contact Details"
-      description="Enquiries that came in from the website."
-      planned={[
-        "Messages sent from the contact form",
-        "Who replied and when",
-        "Mark an enquiry as handled",
-      ]}
-      needs="A contact form that stores what it receives — today it sends nothing to the API."
-    />
+    <>
+      <PageHeader
+        title="Contact Details"
+        description="Messages sent from the Contact Us page. New ones come first."
+      />
+      <ContactTable />
+    </>
   );
 }

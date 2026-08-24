@@ -56,8 +56,7 @@ export const ADMIN_NAV: OwnerNavItem[] = [
     label: "Contact Details",
     href: "/admin/contact-details",
     icon: Phone,
-    description: "Enquiries from the website",
-    isPreview: true,
+    description: "Messages from the Contact Us page",
   },
   {
     label: "Customer Rating Details",

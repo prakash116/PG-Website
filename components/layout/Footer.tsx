@@ -25,7 +25,7 @@ const LINK_COLUMNS = [
     heading: "Company",
     links: [
       { label: "About Us", href: "/#why-pzee" },
-      { label: "Contact", href: "/#faq" },
+      { label: "Contact", href: "/contact" },
       { label: "Careers", href: "/#why-pzee" },
     ],
   },
