@@ -70,15 +70,13 @@ export const ADMIN_NAV: OwnerNavItem[] = [
     label: "PG Support",
     href: "/admin/support",
     icon: Headset,
-    description: "Tickets raised by owners",
-    isPreview: true,
+    description: "Queries raised by owners",
   },
   {
     label: "Subscribe",
     href: "/admin/subscribe",
     icon: Ticket,
-    description: "Plans and subscriptions",
-    isPreview: true,
+    description: "Newsletter sign-ups",
   },
   {
     label: "Setting",

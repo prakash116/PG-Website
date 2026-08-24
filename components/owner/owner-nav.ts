@@ -4,6 +4,7 @@ import {
   ChartNoAxesColumn,
   CreditCard,
   LayoutDashboard,
+  Headset,
   Settings,
   Users,
   UsersRound,
@@ -72,6 +73,12 @@ export const OWNER_NAV: OwnerNavItem[] = [
     href: "/pg-owner/customers",
     icon: Users,
     description: "Visit requests from the website",
+  },
+  {
+    label: "PG Support",
+    href: "/pg-owner/support",
+    icon: Headset,
+    description: "Raise a query with Pzee",
   },
   {
     label: "Settings",

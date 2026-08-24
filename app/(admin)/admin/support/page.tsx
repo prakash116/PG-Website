@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
-import { AdminPreview } from "@/components/admin/AdminPreview";
+import { PageHeader } from "@/components/owner/PageHeader";
+import { SupportTable } from "@/components/admin/SupportTable";
 
 export const metadata: Metadata = { title: "PG Support" };
 
 export default function AdminSupportPage() {
   return (
-    <AdminPreview
-      icon="support"
-      title="PG Support"
-      description="Tickets raised by PG owners."
-      planned={[
-        "Open tickets with who raised them",
-        "Replies in a thread, and who answered",
-        "Close a ticket once it is resolved",
-      ]}
-      needs="A support ticket model and endpoints. None of it exists yet."
-    />
+    <>
+      <PageHeader
+        title="PG Support"
+        description="Queries raised by PG owners. Open ones come first."
+      />
+      <SupportTable />
+    </>
   );
 }

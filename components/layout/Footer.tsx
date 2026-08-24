@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { FaInstagram, FaLinkedinIn, FaXTwitter, FaYoutube } from "react-icons/fa6";
-import { Send } from "lucide-react";
+import { LoaderCircle, Send } from "lucide-react";
 import { Logo } from "@/components/common/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ApiError } from "@/lib/api/client";
+import { subscribe } from "@/lib/api/subscribers";
 
 const LINK_COLUMNS = [
   {
@@ -45,16 +48,33 @@ const SOCIALS = [
 ];
 
 export function Footer() {
-  function handleSubscribe(event: React.FormEvent<HTMLFormElement>) {
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  async function handleSubscribe(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
-    const email = new FormData(form).get("email") as string;
+    const email = String(new FormData(form).get("email") ?? "").trim();
+
     if (!email || !email.includes("@")) {
       toast.error("Please enter a valid email address.");
       return;
     }
-    toast.success("You're subscribed! PG updates are on their way.");
-    form.reset();
+
+    setIsSubscribing(true);
+
+    try {
+      const response = await subscribe(email);
+      toast.success(response.message);
+      form.reset();
+    } catch (error: unknown) {
+      toast.error(
+        error instanceof ApiError
+          ? error.message
+          : "Could not subscribe right now. Please try again."
+      );
+    } finally {
+      setIsSubscribing(false);
+    }
   }
 
   return (
@@ -131,14 +151,24 @@ export function Footer() {
               type="email"
               placeholder="you@example.com"
               autoComplete="email"
+              disabled={isSubscribing}
+              required
               className="h-11 flex-1 rounded-full border-white/15 bg-white/10 px-4 text-white placeholder:text-white/40"
             />
             <Button
               type="submit"
+              disabled={isSubscribing}
               className="h-11 shrink-0 rounded-full bg-primary px-5 font-semibold text-primary-foreground hover:bg-primary/90"
             >
-              Subscribe
-              <Send className="size-4" data-icon="inline-end" />
+              {isSubscribing ? "Subscribing..." : "Subscribe"}
+              {isSubscribing ? (
+                <LoaderCircle
+                  className="size-4 animate-spin"
+                  data-icon="inline-end"
+                />
+              ) : (
+                <Send className="size-4" data-icon="inline-end" />
+              )}
             </Button>
           </form>
         </div>
